@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
-          <router-link :to="'/'" @click="changeTitle('Hex Reports')">
+          <router-link :to="'/'" @click="changePage('Hex Reports', '')">
             <q-avatar>
               <img src="../assets/hexLogo.svg" />
             </q-avatar>
@@ -29,8 +29,8 @@
           >
             <q-item
               clickable
-              :active="menuItem.label === 'Outbox'"
-              @click="changeTitle(menuItem.title)"
+              :active="menuItem.label === activeMenuItem"
+              @click="changePage(menuItem.title, menuItem.label)"
               v-ripple
             >
               <q-item-section avatar>
@@ -56,27 +56,36 @@
 <script>
 import { ref } from "vue";
 
-const menuList = [
-  {
-    icon: "calculate",
-    label: "Excess Mileage Calculator",
-    routerLink: "/excesscalculator",
-    title: "Excess Mileage Calculator",
-  },
-];
-
 export default {
   setup() {
+    const menuList = [
+      {
+        icon: "calculate",
+        label: "Excess Mileage Calculator",
+        routerLink: "/excesscalculator",
+        title: "Excess Mileage Calculator",
+      },
+      {
+        icon: "cruelty_free",
+        label: "The next thing",
+        routerLink: "/thenextthing",
+        title: "Coming Soon",
+      },
+    ];
+    const activeMenuItem = ref("");
+
     const pageTitle = ref("Hex Reports");
-    function changeTitle(title) {
+    function changePage(title, activeIcon) {
       pageTitle.value = title;
+      activeMenuItem.value = activeIcon;
     }
 
     const leftDrawerOpen = ref(true);
 
     return {
       pageTitle,
-      changeTitle,
+      changePage,
+      activeMenuItem,
       menuList,
       leftDrawerOpen,
       toggleLeftDrawer() {
