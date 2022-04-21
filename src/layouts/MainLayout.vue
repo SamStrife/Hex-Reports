@@ -22,7 +22,7 @@
       class="bg-grey-3"
     >
       <q-list>
-        <template v-for="(menuItem, index) in menuList" :key="index">
+        <template v-for="(menuItem, index) in sortedMenu" :key="index">
           <router-link
             style="text-decoration: none; color: inherit"
             :to="menuItem.routerLink"
@@ -72,6 +72,13 @@ export default {
         title: "Coming Soon",
       },
     ];
+
+    const sortedMenu = menuList.sort(function (a, b) {
+      let textA = a.label.toUpperCase();
+      let textB = b.label.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+
     const activeMenuItem = ref("");
 
     const pageTitle = ref("Hex Reports");
@@ -85,8 +92,8 @@ export default {
     return {
       pageTitle,
       changePage,
+      sortedMenu,
       activeMenuItem,
-      menuList,
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
