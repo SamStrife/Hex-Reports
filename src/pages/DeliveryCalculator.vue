@@ -15,10 +15,16 @@
         />
         <q-input
           outlined
+          type="number"
           v-model.number="deliveryMiles"
           label="Delivery Miles"
         />
-        <q-input outlined v-model="rentalTerm" label="Rental Term (Months)" />
+        <q-input
+          outlined
+          type="number"
+          v-model="rentalTerm"
+          label="Rental Term (Months)"
+        />
         <q-toggle v-model="outOfHoursFlag" color="green"
           >Out Of Hours?</q-toggle
         >
@@ -30,7 +36,18 @@
           <div class="text-h6">Delivery Cost</div>
         </q-card-section>
         <q-separator />
-        <q-card-section>£{{ deliveryCost }}</q-card-section>
+        <q-card-section
+          class="text-h5"
+          v-if="
+            deliveryType ==
+            'Delivery of Multiple Vehicles On Low Loader Trailer'
+          "
+        >
+          £{{ deliveryCost }} per vehicle
+        </q-card-section>
+        <q-card-section class="text-h5" v-else
+          >£{{ deliveryCost }}</q-card-section
+        >
       </q-card>
     </div>
   </q-page>
@@ -44,25 +61,33 @@ export default {
     const deliveryMiles = ref(0);
     const rentalTerm = ref(0);
     const waitingTime = ref(0);
-    const discountPercentage = ref(0.25);
     const deliveryType = ref("");
     const outOfHoursFlag = ref(false);
 
+    const discountPercentage = computed(() => {
+      let percentage = ((100 / 12) * rentalTerm.value) / 100;
+      return percentage > 1 ? 1 : percentage;
+    });
+
     const deliveryCost = computed(() => {
-      if (deliveryType.value == "Solo Vehicle Delivery") {
-        return 100;
-      } else if (
+      let baseDeliveryCost = parseInt(0);
+      let outOfHoursCharge = parseInt(outOfHoursFlag.value ? 100 : 0);
+      if (deliveryType.value == "Solo Vehicle Delivery")
+        parseInt((baseDeliveryCost = deliveryMiles.value * 2));
+      if (
         deliveryType.value == "Delivery of Solo Vehicle On Low Loader Trailer"
-      ) {
-        return 200;
-      } else if (
+      )
+        parseInt((baseDeliveryCost = deliveryMiles.value * 1.75));
+      if (
         deliveryType.value ==
         "Delivery of Multiple Vehicles On Low Loader Trailer"
-      ) {
-        return 300;
-      } else {
-        return 0;
-      }
+      )
+        parseInt((baseDeliveryCost = deliveryMiles.value * 1));
+      return parseInt(
+        baseDeliveryCost -
+          baseDeliveryCost * discountPercentage.value +
+          outOfHoursCharge
+      ).toFixed(2);
     });
 
     return {
