@@ -60,7 +60,7 @@ export default {
   setup() {
     const menuList = [
       {
-        icon: "calculate",
+        icon: "speed",
         label: "Excess Mileage Calculator",
         routerLink: "/excesscalculator",
         title: "Excess Mileage Calculator",
