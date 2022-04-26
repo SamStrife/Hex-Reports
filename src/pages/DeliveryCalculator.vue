@@ -18,12 +18,14 @@
           type="number"
           v-model.number="deliveryMiles"
           label="Delivery Miles"
+          :rules="[(val) => val > -1 || 'Please enter a positive number']"
         />
         <q-input
           outlined
           type="number"
           v-model="rentalTerm"
           label="Rental Term (Months)"
+          :rules="[(val) => val > -1 || 'Please enter a positive number']"
         />
         <q-toggle v-model="outOfHoursFlag" color="green"
           >Out Of Hours?</q-toggle
@@ -58,8 +60,8 @@ import { ref, computed } from "vue";
 
 export default {
   setup() {
-    const deliveryMiles = ref(0);
-    const rentalTerm = ref(0);
+    const deliveryMiles = ref("");
+    const rentalTerm = ref("");
     const waitingTime = ref(0);
     const deliveryType = ref("");
     const outOfHoursFlag = ref(false);
