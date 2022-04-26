@@ -74,7 +74,11 @@
             <td>£{{ deliveryMiles * basePricePerMile }}</td>
             <td>{{ (discountPercentage * 100).toFixed(0) }}%</td>
             <td>
-              £{{ deliveryMiles * basePricePerMile * discountPercentage }}
+              £{{
+                (deliveryMiles * basePricePerMile * discountPercentage).toFixed(
+                  2
+                )
+              }}
             </td>
             <td>£{{ outOfHoursCharge }}</td>
           </tr>
