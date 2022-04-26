@@ -52,6 +52,35 @@
         >
       </q-card>
     </div>
+    <div class="q-pa-md row items-start q-gutter-md">
+      <h6>Cost Breakdown</h6>
+      <q-markup-table id="mileageTable">
+        <thead>
+          <tr>
+            <th class="text-left">Base Price Per Mile</th>
+            <th class="text-left">Delivery Miles</th>
+            <th class="text-left">Cost Before Discount</th>
+            <th class="text-left">Discount %</th>
+            <th class="text-left">Discount Amount</th>
+            <th class="text-left">Out Of Hours Charge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>£{{ basePricePerMile }}</td>
+            <td>
+              {{ deliveryMiles }}
+            </td>
+            <td>£{{ deliveryMiles * basePricePerMile }}</td>
+            <td>{{ (discountPercentage * 100).toFixed(0) }}%</td>
+            <td>
+              £{{ deliveryMiles * basePricePerMile * discountPercentage }}
+            </td>
+            <td>£{{ outOfHoursCharge }}</td>
+          </tr>
+        </tbody>
+      </q-markup-table>
+    </div>
   </q-page>
 </template>
 
@@ -62,9 +91,24 @@ export default {
   setup() {
     const deliveryMiles = ref("");
     const rentalTerm = ref("");
-    const waitingTime = ref(0);
     const deliveryType = ref("");
     const outOfHoursFlag = ref(false);
+    const outOfHoursCharge = computed(() => (outOfHoursFlag.value ? 100 : 0));
+    const basePricePerMile = computed(() => {
+      if (deliveryType.value == "Solo Vehicle Delivery") return 2;
+      if (
+        deliveryType.value == "Delivery of Solo Vehicle On Low Loader Trailer"
+      )
+        return 1.75;
+      if (
+        deliveryType.value ==
+        "Delivery of Multiple Vehicles On Low Loader Trailer"
+      )
+        return 1;
+      else {
+        return 0;
+      }
+    });
 
     const discountPercentage = computed(() => {
       let percentage = ((100 / 12) * rentalTerm.value) / 100;
@@ -72,34 +116,23 @@ export default {
     });
 
     const deliveryCost = computed(() => {
-      let baseDeliveryCost = parseInt(0);
-      let outOfHoursCharge = parseInt(outOfHoursFlag.value ? 100 : 0);
-      if (deliveryType.value == "Solo Vehicle Delivery")
-        parseInt((baseDeliveryCost = deliveryMiles.value * 2));
-      if (
-        deliveryType.value == "Delivery of Solo Vehicle On Low Loader Trailer"
-      )
-        parseInt((baseDeliveryCost = deliveryMiles.value * 1.75));
-      if (
-        deliveryType.value ==
-        "Delivery of Multiple Vehicles On Low Loader Trailer"
-      )
-        parseInt((baseDeliveryCost = deliveryMiles.value * 1));
-      return parseInt(
+      let baseDeliveryCost = basePricePerMile.value * deliveryMiles.value;
+      return (
         baseDeliveryCost -
-          baseDeliveryCost * discountPercentage.value +
-          outOfHoursCharge
+        baseDeliveryCost * discountPercentage.value +
+        outOfHoursCharge.value
       ).toFixed(2);
     });
 
     return {
+      basePricePerMile,
       deliveryMiles,
       rentalTerm,
-      waitingTime,
       discountPercentage,
       deliveryType,
       outOfHoursFlag,
       deliveryCost,
+      outOfHoursCharge,
     };
   },
 };
