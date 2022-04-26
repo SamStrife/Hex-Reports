@@ -60,16 +60,16 @@ export default {
   setup() {
     const menuList = [
       {
-        icon: "calculate",
+        icon: "speed",
         label: "Excess Mileage Calculator",
         routerLink: "/excesscalculator",
         title: "Excess Mileage Calculator",
       },
       {
-        icon: "cruelty_free",
-        label: "The next thing",
-        routerLink: "/thenextthing",
-        title: "Coming Soon",
+        icon: "local_shipping",
+        label: "Delivery Cost Calculator",
+        routerLink: "/deliverycalculator",
+        title: "Delivery Cost Calculator",
       },
     ];
 
