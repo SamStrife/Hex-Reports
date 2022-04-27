@@ -1,12 +1,7 @@
 <template>
   <q-page>
     <div class="q-pa-md">
-      <q-uploader
-        url="http://localhost:4444/upload"
-        color="primary"
-        bordered
-        label="Upload Supplier Spreadsheet"
-      />
+      <GitiCrouchUploader></GitiCrouchUploader>
     </div>
 
     <div class="q-pa-md">
@@ -58,8 +53,13 @@
 
 <script>
 import { ref } from "vue";
+import GitiCrouchUploader from "../components/GitiCrouchUploader.vue";
 
 export default {
+  components: {
+    GitiCrouchUploader,
+    GitiCrouchUploader,
+  },
   setup() {
     return {};
   },
