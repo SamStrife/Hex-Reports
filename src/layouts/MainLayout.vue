@@ -71,6 +71,12 @@ export default {
         routerLink: "/deliverycalculator",
         title: "Delivery Cost Calculator",
       },
+      {
+        icon: "calculate",
+        label: "Crouch/Giti Revenue Splitter",
+        routerLink: "/giticrouchsplit",
+        title: "Crouch/Giti Revenue Splitter",
+      },
     ];
 
     const sortedMenu = menuList.sort(function (a, b) {

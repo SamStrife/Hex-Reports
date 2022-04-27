@@ -1,4 +1,3 @@
-,
 <template>
   <q-page>
     <div class="q-pa-md">
