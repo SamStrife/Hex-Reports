@@ -3,13 +3,13 @@
     <div class="q-pa-md">
       <q-file
         v-model="file"
-        label="Upload File"
+        @update:model-value="handleFileUpload()"
         outlined
-        use-chips
+        label="Upload Supplier Spreadsheet"
         accept=".xlsx"
       />
       <br />
-      <q-btn color="primary" label="Process" />
+      <p>{{ returnBreakdown }}</p>
       <br />
       <p>{{ apiReturn }}</p>
     </div>
@@ -67,17 +67,31 @@ import axios from "axios";
 
 export default {
   setup() {
-    const file = ref("");
+    const file = ref(null);
     const apiReturn = ref("");
+    let formData = new FormData();
+    const returnBreakdown = ref("");
 
-    axios.get("http://127.0.0.1:5000/").then((response) => {
-      console.log(response);
-      apiReturn.value = response.data;
-    });
+    const handleFileUpload = async () => {
+      // debugger;
+      console.log("selected file", file.value);
+      //Upload to server
+      formData.append("upload", file.value);
+      axios
+        .post("http://127.0.0.1:5000/CrouchGitiSplit", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((response) => {
+          returnBreakdown.value = JSON.stringify(response);
+        });
+      formData = new FormData();
+    };
 
     return {
       file,
       apiReturn,
+      returnBreakdown,
+      handleFileUpload,
     };
   },
 };
