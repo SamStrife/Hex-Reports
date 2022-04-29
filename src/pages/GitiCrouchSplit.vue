@@ -9,9 +9,6 @@
         accept=".xlsx"
       />
       <br />
-      <p>{{ returnBreakdown }}</p>
-      <br />
-      <p>{{ apiReturn }}</p>
     </div>
 
     <div class="q-pa-md">
@@ -28,15 +25,30 @@
         </thead>
         <tbody>
           <tr>
-            <td>Amount</td>
-            <td>Amount</td>
-            <td>Amount</td>
-            <td>Amount</td>
-            <td>Amount</td>
+            <td v-if="returnBreakdown?.contractSales">
+              £{{ numberWithCommas(returnBreakdown.contractSales, true) }}
+            </td>
+            <td v-else>£0</td>
+            <td v-if="returnBreakdown?.rentalSales">
+              £{{ numberWithCommas(returnBreakdown.rentalSales, true) }}
+            </td>
+            <td v-else>£0</td>
+            <td v-if="returnBreakdown?.fleetManagement">
+              £{{ numberWithCommas(returnBreakdown.fleetManagement, true) }}
+            </td>
+            <td v-else>£0</td>
+            <td v-if="returnBreakdown?.notOnHire">
+              £{{ numberWithCommas(returnBreakdown.notOnHire, true) }}
+            </td>
+            <td v-else>£0</td>
+            <td v-if="returnBreakdown?.unallocated">
+              £{{ numberWithCommas(returnBreakdown.unallocated, true) }}
+            </td>
+            <td v-else>£0</td>
           </tr>
         </tbody>
       </q-markup-table>
-      <h6>Unallocated Jobs</h6>
+      <h6>Unassigned Jobs</h6>
       <q-markup-table id="unallocatedJobs">
         <thead>
           <tr>
@@ -73,25 +85,28 @@ export default {
     const returnBreakdown = ref("");
 
     const handleFileUpload = async () => {
-      // debugger;
-      console.log("selected file", file.value);
-      //Upload to server
       formData.append("upload", file.value);
       axios
         .post("http://127.0.0.1:5000/CrouchGitiSplit", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
-        .then((response) => {
-          returnBreakdown.value = JSON.stringify(response);
-        });
+        .then((response) => (returnBreakdown.value = response.data));
       formData = new FormData();
     };
+
+    function numberWithCommas(number, currencyMode = false) {
+      let rounded = currencyMode
+        ? number.toFixed(2)
+        : Math.round(parseInt(number));
+      return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
     return {
       file,
       apiReturn,
-      returnBreakdown,
       handleFileUpload,
+      returnBreakdown,
+      numberWithCommas,
     };
   },
 };
