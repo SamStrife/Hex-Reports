@@ -8,163 +8,182 @@
           type="text"
           v-model="vehicleRegistration"
           label="Vehicle Registration"
+          :rules="[(val) => val.length > 0 || 'Please enter a registration']"
         />
         <q-btn type="submit" label="Get Details" color="green-10" />
       </q-form>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Manufacturer</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.manufacturer">
-            {{ requestReturn.manufacturer }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
+      <div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Manufacturer</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.manufacturer">
+              {{ requestReturn.manufacturer }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Model</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.model">
+              {{ requestReturn.model }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Vehicle Type</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.vehicleType">
+              {{ requestReturn.vehicleType }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Vehicle Status</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.status">
+              {{ requestReturn.status }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Vehicle Sub Status</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.subStatus">
+              {{ requestReturn.subStatus }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Customer</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.customer">
+              {{ requestReturn.customer }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Last Recorded Mileage</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.mileage">
+              {{ requestReturn.mileage }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section
+              :class="
+                setInspectionClass(
+                  requestReturn.daysUntilInspection,
+                  requestReturn.inspectionDue
+                )
+              "
+            >
+              <div class="text-h6">Next Inspection Due</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.inspectionDue">
+              {{ requestReturn.inspectionDue }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section
+              :class="
+                setMOTClass(requestReturn.monthsUntilMOT, requestReturn.motDue)
+              "
+            >
+              <div class="text-h6">Next MOT Due</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.motDue">
+              {{ requestReturn.motDue }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section
+              :class="
+                setTachoClass(
+                  requestReturn.monthsUntilTacho,
+                  requestReturn.tachoDue
+                )
+              "
+            >
+              <div class="text-h6">Next Tacho Calibration Due</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6" v-if="requestReturn?.tachoDue">
+              {{ requestReturn.tachoDue }}
+            </div>
+            <div class="q-pa-md text-h6" v-else><br /></div>
+          </q-card>
+          <br />
+        </div>
       </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Model</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.model">
-            {{ requestReturn.model }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Vehicle Type</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.vehicleType">
-            {{ requestReturn.vehicleType }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Vehicle Status</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.status">
-            {{ requestReturn.status }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Vehicle Sub Status</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.subStatus">
-            {{ requestReturn.subStatus }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Customer</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.customer">
-            {{ requestReturn.customer }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Last Recorded Mileage</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.mileage">
-            {{ requestReturn.mileage }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section
-            :class="
-              setInspectionClass(
-                requestReturn.daysUntilInspection,
-                requestReturn.inspectionDue
-              )
-            "
-          >
-            <div class="text-h6">Next Inspection Due</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.inspectionDue">
-            {{ requestReturn.inspectionDue }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section
-            :class="
-              setMOTClass(requestReturn.monthsUntilMOT, requestReturn.motDue)
-            "
-          >
-            <div class="text-h6">Next MOT Due</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.motDue">
-            {{ requestReturn.motDue }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
-      </div>
-      <div class="q-pa-md">
-        <q-card>
-          <q-card-section
-            :class="
-              setTachoClass(
-                requestReturn.monthsUntilTacho,
-                requestReturn.tachoDue
-              )
-            "
-          >
-            <div class="text-h6">Next Tacho Calibration Due</div>
-          </q-card-section>
-          <q-separator />
-          <div class="q-pa-md text-h6" v-if="requestReturn?.tachoDue">
-            {{ requestReturn.tachoDue }}
-          </div>
-          <div class="q-pa-md text-h6" v-else><br /></div>
-        </q-card>
-        <br />
+      <div>
+        <div class="q-pa-md">
+          <q-card>
+            <q-card-section class="bg-red-10 text-white">
+              <div class="text-h6">Vehicle Not Found</div>
+            </q-card-section>
+            <q-separator />
+            <div class="q-pa-md text-h6">
+              Sorry but we could not find a vehicle matching that registration.
+              Please ensure you have entered the correct registration number and
+              try again.
+            </div>
+          </q-card>
+          <br />
+        </div>
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import axios from "axios";
 import { date } from "quasar";
 
@@ -187,7 +206,17 @@ export default {
       monthsUntilTacho: null,
     });
 
-    async function requestData() {
+    const hideResults = ref(true);
+
+    const vehicleNotFound = computed(() => {
+      if (requestReturn.value.manufacturer) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    function requestData() {
       axios
         .get(
           `http://127.0.0.1:5000/VehicleSummary/${vehicleRegistration.value}`
@@ -227,7 +256,7 @@ export default {
             new Date(),
             "months"
           );
-          console.log(requestReturn.value);
+          hideResults.value = false;
         });
     }
 
@@ -258,6 +287,8 @@ export default {
       setInspectionClass,
       setMOTClass,
       setTachoClass,
+      vehicleNotFound,
+      hideResults,
     };
   },
 };
