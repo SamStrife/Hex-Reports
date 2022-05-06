@@ -34,6 +34,16 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/vehiclesummary",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/VehicleSummary.vue"),
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

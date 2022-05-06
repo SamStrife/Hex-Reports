@@ -71,6 +71,12 @@ export default {
         routerLink: "/deliverycalculator",
         title: "Delivery Cost Calculator",
       },
+      {
+        icon: "no_crash",
+        label: "Vehicle Summary",
+        routerLink: "/vehiclesummary",
+        title: "Vehicle Summary Report",
+      },
     ];
 
     const sortedMenu = menuList.sort(function (a, b) {
