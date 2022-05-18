@@ -217,7 +217,6 @@
 import { ref, computed } from "vue";
 import axios from "axios";
 import { date } from "quasar";
-import { directive as motion } from "@vueuse/motion";
 
 export default {
   setup() {
@@ -250,6 +249,7 @@ export default {
     });
 
     function requestData() {
+      queryRanOnce.value = false;
       axios
         .get(
           `http://139.59.171.54:5000/VehicleSummary/${vehicleRegistration.value}`
