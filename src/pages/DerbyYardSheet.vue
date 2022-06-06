@@ -1,6 +1,9 @@
 <template>
-  <q-page class="flex flex-center">
-    <h1>Derby Yard Sheet</h1>
+  <q-page class="flex column q-pa-xl">
+    <div v-for="i in 10" :key="i">
+      <yard-sheet-card></yard-sheet-card>
+      <br />
+    </div>
   </q-page>
 </template>
 
@@ -10,5 +13,6 @@ import YardSheetCard from "src/components/YardSheetCard.vue";
 
 export default defineComponent({
   name: "DerbyYardSheet",
+  components: { YardSheetCard },
 });
 </script>
