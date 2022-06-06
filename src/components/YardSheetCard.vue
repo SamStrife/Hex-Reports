@@ -4,15 +4,19 @@
       <q-card-section>
         <div class="flex justify-between">
           <div>
-            <div class="text-h6">Registration</div>
-            <div class="text-subtitle2">Vechile Type, Make & Model</div>
+            <div class="text-h6">{{ props.registration }}</div>
             <div class="text-subtitle2">
-              Status: Status, Sub Status: Sub Status
+              {{ props.type }} - {{ props.make }} {{ props.model }}
             </div>
-            <div class="text-subtitle2">On Hire to: Customer</div>
-            <q-badge color="green" text-color="black" label="M" />
-            <q-badge color="amber" text-color="black" label="I" />
-            <q-badge color="red" text-color="black" label="T" />
+            <div class="text-subtitle2">
+              Status: {{ props.status }} - Sub Status: {{ props.subStatus }}
+            </div>
+            <div class="text-subtitle2">
+              <q-badge color="green" text-color="black" label="M" />
+              <q-badge color="amber" text-color="black" label="I" />
+              <q-badge color="red" text-color="black" label="T" />
+              On Hire to: {{ props.customer }}
+            </div>
           </div>
           <q-card-actions class="flex column">
             <div class="flex q-pa-xs">
@@ -32,4 +36,15 @@
   </div>
 </template>
 
-<script></script>
+<script setup>
+import { defineProps } from "vue";
+const props = defineProps({
+  registration: String,
+  type: String,
+  make: String,
+  model: String,
+  status: String,
+  subStatus: String,
+  customer: String,
+});
+</script>
