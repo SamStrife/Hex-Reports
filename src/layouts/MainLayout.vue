@@ -77,6 +77,12 @@ export default {
         routerLink: "/vehiclesummary",
         title: "Vehicle Summary Report",
       },
+      {
+        icon: "fact_check",
+        label: "Derby Yard Sheet",
+        routerLink: "/derbyyardsheet",
+        title: "Derby Yard Sheet",
+      },
     ];
 
     const sortedMenu = menuList.sort(function (a, b) {
