@@ -7,7 +7,7 @@
         icon="arrow_back"
         @click="changeDate('backward')"
       />
-      <h4>{{ date.formatDate(selectedDate, "dddd DD/MM/YYYY") }}</h4>
+      <h4>{{ date.formatDate(selectedDate, "dddd: DD/MM/YYYY") }}</h4>
       <q-btn
         round
         color="primary"
@@ -36,7 +36,7 @@
 import { defineComponent, ref } from "vue";
 import YardSheetCard from "src/components/YardSheetCard.vue";
 import axios from "axios";
-import { useQuasar, date } from "quasar";
+import { useQuasar, date, Dialog } from "quasar";
 
 defineComponent({
   name: "DerbyYardSheet",
@@ -63,13 +63,26 @@ function changeDate(direction) {
   }
   getdata(selectedDate.value);
 }
+
 function getdata(passedDate) {
-  $q.loading.show();
+  $q.loading.show({
+    delay: 50,
+    message: "Fetching Yard Sheet Data",
+    boxClass: "bg-grey-2 text-grey-9",
+    spinnerColor: "primary",
+  });
   let formattedDate = date.formatDate(passedDate, "YYYY-MM-DD");
   axios
     .get(`http://127.0.0.1:5000/GetDerbyYardSheet/${formattedDate}`)
-    .then((response) => (yardSheet.value = response.data))
-    .then($q.loading.hide());
+    .then((response) => {
+      console.log(response);
+      if (response.statusText !== "OK") {
+        $q.dialog({ title: "Error" });
+      } else {
+        yardSheet.value = response.data;
+        $q.loading.hide();
+      }
+    });
 }
 
 getdata(today);
