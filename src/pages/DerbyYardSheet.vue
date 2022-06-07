@@ -1,9 +1,25 @@
 <template>
   <q-page class="flex column q-pa-xl">
-    <div>
+    <div class="flex justify-evenly col col-md-3">
+      <q-btn
+        round
+        color="primary"
+        icon="arrow_back"
+        @click="changeDate('backward')"
+      />
+      <h4>{{ date.formatDate(selectedDate, "dddd DD/MM/YYYY") }}</h4>
+      <q-btn
+        round
+        color="primary"
+        icon="arrow_forwards"
+        @click="changeDate('forward')"
+      />
+    </div>
+    <div class="flex column q-pa-xl">
       <yard-sheet-card
-        v-for="vehicle in raw"
+        v-for="vehicle in yardSheet"
         :key="vehicle.ID"
+        :ID="vehicle.ID"
         :registration="vehicle.Registration"
         :type="vehicle.Vehicle_Type"
         :make="vehicle.Vehicle_Make"
@@ -12,7 +28,6 @@
         :subStatus="vehicle.Vehicle_Sub_Status"
         :customer="vehicle.Customer"
       ></yard-sheet-card>
-      <br />
     </div>
   </q-page>
 </template>
@@ -21,15 +36,41 @@
 import { defineComponent, ref } from "vue";
 import YardSheetCard from "src/components/YardSheetCard.vue";
 import axios from "axios";
+import { useQuasar, date } from "quasar";
 
 defineComponent({
   name: "DerbyYardSheet",
   components: { YardSheetCard },
 });
 
-const raw = ref("");
+const $q = useQuasar();
 
-axios
-  .get("http://127.0.0.1:5000/GetDerbyYardSheet")
-  .then((response) => (raw.value = response.data));
+const yardSheet = ref("");
+
+const today = Date.now();
+const selectedDate = ref(new Date());
+
+function changeDate(direction) {
+  yardSheet.value = null;
+  if (direction === "forward") {
+    selectedDate.value = date.addToDate(selectedDate.value, { days: 1 });
+  } else if (direction === "backward") {
+    selectedDate.value = date.subtractFromDate(selectedDate.value, {
+      days: 1,
+    });
+  } else if (direction === "today") {
+    selectedDate.value = today;
+  }
+  getdata(selectedDate.value);
+}
+function getdata(passedDate) {
+  $q.loading.show();
+  let formattedDate = date.formatDate(passedDate, "YYYY-MM-DD");
+  axios
+    .get(`http://127.0.0.1:5000/GetDerbyYardSheet/${formattedDate}`)
+    .then((response) => (yardSheet.value = response.data))
+    .then($q.loading.hide());
+}
+
+getdata(today);
 </script>

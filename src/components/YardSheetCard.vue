@@ -39,6 +39,7 @@
 <script setup>
 import { defineProps } from "vue";
 const props = defineProps({
+  ID: String,
   registration: String,
   type: String,
   make: String,
