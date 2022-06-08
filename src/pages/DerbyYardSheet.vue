@@ -9,6 +9,7 @@
       />
       <h4>{{ date.formatDate(selectedDate, "dddd: DD/MM/YYYY") }}</h4>
       <q-btn
+        v-show="daysBetweenTodayAndSelected < 0"
         round
         color="primary"
         icon="arrow_forwards"
@@ -27,13 +28,17 @@
         :status="vehicle.Vehicle_Status"
         :subStatus="vehicle.Vehicle_Sub_Status"
         :customer="vehicle.Customer"
+        :daysBetweenTodayAndSelected="daysBetweenTodayAndSelected"
+        :motDue="vehicle.Vehicle_MOT_Due"
+        :inspectionDue="vehicle.Vehicle_Inspection_Due"
+        :tachoDue="vehicle.Vehicle_Tacho_Due"
       ></yard-sheet-card>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import YardSheetCard from "src/components/YardSheetCard.vue";
 import axios from "axios";
 import { useQuasar, date, Dialog } from "quasar";
@@ -47,8 +52,11 @@ const $q = useQuasar();
 
 const yardSheet = ref("");
 
-const today = Date.now();
+const today = new Date();
 const selectedDate = ref(new Date());
+const daysBetweenTodayAndSelected = computed(() => {
+  return date.getDateDiff(selectedDate.value, today, "days");
+});
 
 function changeDate(direction) {
   yardSheet.value = null;
