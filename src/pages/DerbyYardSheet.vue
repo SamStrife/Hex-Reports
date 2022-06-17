@@ -1,22 +1,25 @@
 <template>
-  <q-page class="flex column q-pa-xl">
-    <div class="flex justify-evenly col col-md-3">
-      <q-btn
-        round
-        color="primary"
-        icon="arrow_back"
-        @click="changeDate('backward')"
-      />
-      <h4>{{ date.formatDate(selectedDate, "dddd: DD/MM/YYYY") }}</h4>
-      <q-btn
-        v-show="daysBetweenTodayAndSelected < 0"
-        round
-        color="primary"
-        icon="arrow_forwards"
-        @click="changeDate('forward')"
-      />
-    </div>
-    <div class="flex column q-pa-xl">
+  <q-page>
+    <q-banner class="bg-primary text-white">
+      <div class="flex justify-around">
+        <q-btn
+          round
+          color="green"
+          icon="arrow_back"
+          @click="changeDate('backward')"
+        />
+        <h5>
+          {{ date.formatDate(selectedDate, "dddd: DD/MM/YYYY") }}
+        </h5>
+        <q-btn
+          round
+          color="green"
+          icon="arrow_forwards"
+          @click="changeDate('forward')"
+        />
+      </div>
+    </q-banner>
+    <div class="flex column q-pa-md">
       <yard-sheet-card
         v-for="vehicle in yardSheet"
         :key="vehicle.ID"
@@ -32,6 +35,7 @@
         :motDue="vehicle.Vehicle_MOT_Due"
         :inspectionDue="vehicle.Vehicle_Inspection_Due"
         :tachoDue="vehicle.Vehicle_Tacho_Due"
+        :confirmedDate="vehicle.Confirmed_Date_Time"
       ></yard-sheet-card>
     </div>
   </q-page>
@@ -50,7 +54,7 @@ defineComponent({
 
 const $q = useQuasar();
 
-const yardSheet = ref("");
+const yardSheet = ref();
 
 const today = new Date();
 const selectedDate = ref(new Date());
@@ -80,17 +84,20 @@ function getdata(passedDate) {
     spinnerColor: "primary",
   });
   let formattedDate = date.formatDate(passedDate, "YYYY-MM-DD");
-  axios
-    .get(`http://127.0.0.1:5000/GetDerbyYardSheet/${formattedDate}`)
-    .then((response) => {
-      console.log(response);
-      if (response.statusText !== "OK") {
-        $q.dialog({ title: "Error" });
-      } else {
-        yardSheet.value = response.data;
-        $q.loading.hide();
-      }
-    });
+  try {
+    axios
+      .get(`http://127.0.0.1:5000/GetDerbyYardSheet/${formattedDate}`)
+      .then((response) => {
+        if (response.statusText !== "OK") {
+          $q.dialog({ title: "Error" });
+        } else {
+          yardSheet.value = response.data;
+          $q.loading.hide();
+        }
+      });
+  } catch (err) {
+    console.log(`error: ${err}`);
+  }
 }
 
 getdata(today);
