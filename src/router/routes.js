@@ -54,6 +54,16 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/suppliermap",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/SupplierMap.vue"),
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

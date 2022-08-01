@@ -1342,6 +1342,11 @@
   dependencies:
     "@types/node" "*"
 
+"@vue-leaflet/vue-leaflet@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@vue-leaflet/vue-leaflet/-/vue-leaflet-0.6.1.tgz#d731a5d2256d049e345f58330616180191d88b12"
+  integrity sha512-/sm0bdrdftXh5nSGEPsoKrJI1D/GtKiEsBo9X/TA2yu4lYTDcaem6U4t1Ea5CoLleiZRCNUrZr9PG/xHdUPXYA==
+
 "@vue/compiler-core@3.2.25":
   version "3.2.25"
   resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.2.25.tgz#3fa88debc97a89a513e1d9b771e0802b9a006734"
