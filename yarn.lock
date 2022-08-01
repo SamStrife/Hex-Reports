@@ -9,6 +9,18 @@
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.0"
 
+"@azure/msal-browser@^2.28.0":
+  version "2.28.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-browser/-/msal-browser-2.28.0.tgz#611819ce233fc1071104b9fe40ca8e4966bdaaca"
+  integrity sha512-d83BBMT6id+eAdox+M37PCVWYDiqd6BrXxvjAVI2xJluRoSJCZQvB02Bcg6QCSe3ruLUK6vGwMTe8p1cDExePQ==
+  dependencies:
+    "@azure/msal-common" "^7.2.0"
+
+"@azure/msal-common@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-7.2.0.tgz#e186450866cb95f18bc558e0fe1673ab44b42d4f"
+  integrity sha512-+Oz8LKTOACDHqDmv+MZy/z+DZRH8RZbMjhadmvp0scQ0R75OrzZro+HkxifWhtDG8l1ViYkvV9NHb4pEZyajAQ==
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.16.7", "@babel/code-frame@^7.8.3":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.16.7.tgz#44416b6bd7624b998f5b1af5d470856c40138789"

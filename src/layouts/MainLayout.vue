@@ -11,7 +11,11 @@
           </router-link>
           {{ pageTitle }}
         </q-toolbar-title>
+        <q-avatar color="green-8" text-color="white" v-if="myAccounts">{{
+          myAccounts[0].name[0]
+        }}</q-avatar>
         <q-btn
+          v-else
           @click="openAuthPopup"
           color="green-8"
           icon-right="login"
@@ -52,6 +56,7 @@
     </q-drawer>
 
     <q-page-container>
+      <p>Account: {{ myAccounts }}</p>
       <router-view />
     </q-page-container>
 
@@ -62,6 +67,7 @@
 <script>
 import { ref } from "vue";
 import { menuList } from "./menuList";
+import * as msal from "@azure/msal-browser";
 
 export default {
   setup() {
@@ -81,10 +87,28 @@ export default {
 
     const leftDrawerOpen = ref(true);
 
-    function openAuthPopup() {
-      window.open(
-        "https://login.microsoftonline.com/9ec541fd-d4e0-4871-bca6-3b6b57af5c9c/oauth2/v2.0/authorize?client_id=c7f3f16b-f553-4720-a3e9-28f2c92afbbb&scope=User.ReadBasic.All"
-      );
+    const myAccounts = ref("");
+
+    const msalConfig = {
+      auth: {
+        clientId: "d3ecdd5a-cd64-4532-9b5f-71e00007efa8",
+        authority:
+          "https://login.microsoftonline.com/9ec541fd-d4e0-4871-bca6-3b6b57af5c9c",
+      },
+    };
+
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+    async function openAuthPopup() {
+      try {
+        await msalInstance
+          .loginPopup({
+            redirectUri: "http://localhost:8080/",
+          })
+          .then((myAccounts.value = msalInstance.getAllAccounts()));
+      } catch (err) {
+        // handle error
+      }
     }
 
     return {
@@ -97,6 +121,7 @@ export default {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
       openAuthPopup,
+      myAccounts,
     };
   },
 };
