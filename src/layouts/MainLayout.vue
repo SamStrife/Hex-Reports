@@ -11,6 +11,12 @@
           </router-link>
           {{ pageTitle }}
         </q-toolbar-title>
+        <q-btn
+          @click="openAuthPopup"
+          color="green-8"
+          icon-right="login"
+          label="Log In"
+        />
       </q-toolbar>
     </q-header>
 
@@ -55,36 +61,10 @@
 
 <script>
 import { ref } from "vue";
+import { menuList } from "./menuList";
 
 export default {
   setup() {
-    const menuList = [
-      {
-        icon: "speed",
-        label: "Excess Mileage Calculator",
-        routerLink: "/excesscalculator",
-        title: "Excess Mileage Calculator",
-      },
-      {
-        icon: "local_shipping",
-        label: "Delivery Cost Calculator",
-        routerLink: "/deliverycalculator",
-        title: "Delivery Cost Calculator",
-      },
-      {
-        icon: "no_crash",
-        label: "Vehicle Summary",
-        routerLink: "/vehiclesummary",
-        title: "Vehicle Summary Report",
-      },
-      {
-        icon: "fact_check",
-        label: "Derby Yard Sheet",
-        routerLink: "/derbyyardsheet",
-        title: "Derby Yard Sheet",
-      },
-    ];
-
     const sortedMenu = menuList.sort(function (a, b) {
       let textA = a.label.toUpperCase();
       let textB = b.label.toUpperCase();
@@ -101,6 +81,12 @@ export default {
 
     const leftDrawerOpen = ref(true);
 
+    function openAuthPopup() {
+      window.open(
+        "https://login.microsoftonline.com/9ec541fd-d4e0-4871-bca6-3b6b57af5c9c/oauth2/v2.0/authorize?client_id=c7f3f16b-f553-4720-a3e9-28f2c92afbbb&scope=User.ReadBasic.All"
+      );
+    }
+
     return {
       pageTitle,
       changePage,
@@ -110,6 +96,7 @@ export default {
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
+      openAuthPopup,
     };
   },
 };

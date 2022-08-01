@@ -21,10 +21,18 @@
           class="flex column"
           v-if="props.daysBetweenTodayAndSelected == 0"
         >
-          <div class="flex q-py-xs" v-if="!props.confirmedDate">
+          <div
+            class="flex q-py-xs"
+            v-if="!props.confirmedDate"
+            @click="confirmVehicle(props.ID)"
+          >
             <q-btn icon="check" color="green"></q-btn>
           </div>
-          <div class="flex q-py-xs" v-if="props.confirmedDate">
+          <div
+            class="flex q-py-xs"
+            v-if="props.confirmedDate"
+            @click="unconfirmVehicle(props.ID)"
+          >
             <q-btn icon="close" color="red"></q-btn>
           </div>
           <div class="flex q-pa-xs">
@@ -42,8 +50,10 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from "vue";
+import { defineProps, computed, defineEmits } from "vue";
 import { date } from "quasar";
+import axios from "axios";
+
 const props = defineProps({
   ID: String,
   registration: String,
@@ -57,8 +67,10 @@ const props = defineProps({
   motDue: Number,
   inspectionDue: Number,
   tachoDue: Number,
-  confirmedDate: Date,
+  confirmedDate: Number,
 });
+
+const emit = defineEmits(["confirmVehicle", "unconfirmVehcile"]);
 
 const motColour = computed(() => {
   let monthsUntil = date.getDateDiff(props.motDue, Date.now(), "months");
@@ -96,4 +108,12 @@ const tachoColour = computed(() => {
 const cardColour = computed(() =>
   props.confirmedDate ? "bg-green-2" : "bg-white"
 );
+
+function confirmVehicle(vehicleId) {
+  axios.post(`http://127.0.0.1:5000/DerbyYardSheet/confirm/${vehicleId}`);
+}
+
+function unconfirmVehicle(vehicleId) {
+  axios.post(`http://127.0.0.1:5000/DerbyYardSheet/unconfirm/${vehicleId}`);
+}
 </script>

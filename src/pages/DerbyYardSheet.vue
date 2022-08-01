@@ -76,7 +76,7 @@ function changeDate(direction) {
   getdata(selectedDate.value);
 }
 
-function getdata(passedDate) {
+function getdata(passedDate = null) {
   $q.loading.show({
     delay: 50,
     message: "Fetching Yard Sheet Data",
@@ -84,20 +84,12 @@ function getdata(passedDate) {
     spinnerColor: "primary",
   });
   let formattedDate = date.formatDate(passedDate, "YYYY-MM-DD");
-  try {
-    axios
-      .get(`http://127.0.0.1:5000/GetDerbyYardSheet/${formattedDate}`)
-      .then((response) => {
-        if (response.statusText !== "OK") {
-          $q.dialog({ title: "Error" });
-        } else {
-          yardSheet.value = response.data;
-          $q.loading.hide();
-        }
-      });
-  } catch (err) {
-    console.log(`error: ${err}`);
-  }
+  axios
+    .get(`http://139.59.171.54:5000/GetDerbyYardSheet/${formattedDate}`)
+    .then((response) => {
+      yardSheet.value = response.data;
+      $q.loading.hide();
+    });
 }
 
 getdata(today);
