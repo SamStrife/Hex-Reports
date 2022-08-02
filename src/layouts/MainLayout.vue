@@ -29,6 +29,7 @@
             :to="menuItem.routerLink"
           >
             <q-item
+              v-if="userStore.loggedIn || !menuItem.requiresLogin"
               clickable
               :active="menuItem.label === activeMenuItem"
               @click="changePage(menuItem.title, menuItem.label)"
@@ -54,37 +55,31 @@
   </q-layout>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
 import { menuList } from "./menuList";
 import LoginButton from "../components/LoginButton.vue";
+import { storeUser } from "../stores/storeUser";
 
-export default {
-  setup() {
-    const sortedMenu = menuList.sort(function (a, b) {
-      let textA = a.label.toUpperCase();
-      let textB = b.label.toUpperCase();
-      return textA < textB ? -1 : textA > textB ? 1 : 0;
-    });
-    const activeMenuItem = ref("");
-    const pageTitle = ref("Hex Reports");
-    function changePage(title, activeIcon) {
-      pageTitle.value = title;
-      activeMenuItem.value = activeIcon;
-    }
+const userStore = storeUser();
 
-    const leftDrawerOpen = ref(true);
-    return {
-      pageTitle,
-      changePage,
-      sortedMenu,
-      activeMenuItem,
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-    };
-  },
-  components: { LoginButton },
-};
+const sortedMenu = menuList.sort(function (a, b) {
+  let textA = a.label.toUpperCase();
+  let textB = b.label.toUpperCase();
+  return textA < textB ? -1 : textA > textB ? 1 : 0;
+});
+
+const activeMenuItem = ref("");
+
+const pageTitle = ref("Hex Reports");
+function changePage(title, activeIcon) {
+  pageTitle.value = title;
+  activeMenuItem.value = activeIcon;
+}
+
+const leftDrawerOpen = ref(true);
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+}
 </script>

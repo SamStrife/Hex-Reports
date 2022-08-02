@@ -28,10 +28,10 @@ const menuList = [
     requiresLogin: true,
   },
   {
-    label: "Supplier Map",
-    icon: "map",
-    routerLink: "/suppliermap",
-    title: "Derby Yard Sheet",
+    label: "Asset File",
+    icon: "list",
+    routerLink: "/assetfile",
+    title: "Asset File",
     requiresLogin: true,
   },
 ];

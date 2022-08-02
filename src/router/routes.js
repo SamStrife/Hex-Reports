@@ -55,12 +55,12 @@ const routes = [
     ],
   },
   {
-    path: "/suppliermap",
+    path: "/assetfile",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
         path: "",
-        component: () => import("pages/SupplierMap.vue"),
+        component: () => import("pages/AssetFile.vue"),
       },
     ],
   },

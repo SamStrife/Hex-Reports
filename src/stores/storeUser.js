@@ -13,15 +13,17 @@ const msalInstance = new msal.PublicClientApplication(msalConfig);
 
 export const storeUser = defineStore("user", {
   state: () => ({
-    account: null,
+    account: [],
   }),
 
   getters: {
     loggedIn: (state) => state?.account?.length > 0,
 
+    userName: (state) => state?.account[0]?.name,
+
     userInitials(state) {
       let initials = "";
-      state.account[0].name.split(" ").forEach((element) => {
+      state?.account[0]?.name.split(" ").forEach((element) => {
         initials += element[0];
       });
       return initials;
@@ -34,14 +36,17 @@ export const storeUser = defineStore("user", {
         await msalInstance.loginPopup({
           redirectUri: "http://localhost:8080/",
         });
-        this.account = msalInstance.getAllAccounts();
+        let token = msalInstance.getAllAccounts();
+        this.account = token;
       } catch (err) {
         console.warn(err);
       }
     },
     async logout() {
       try {
-        await msalInstance.logoutPopup();
+        await msalInstance.logoutPopup({
+          postLogoutRedirectUri: "http://localhost:8080/",
+        });
         this.account = null;
       } catch (err) {
         console.warn(err);
