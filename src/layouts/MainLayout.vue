@@ -11,16 +11,7 @@
           </router-link>
           {{ pageTitle }}
         </q-toolbar-title>
-        <q-avatar color="green-8" text-color="white" v-if="myAccounts">{{
-          myAccounts[0].name[0]
-        }}</q-avatar>
-        <q-btn
-          v-else
-          @click="openAuthPopup"
-          color="green-8"
-          icon-right="login"
-          label="Log In"
-        />
+        <LoginButton></LoginButton>
       </q-toolbar>
     </q-header>
 
@@ -56,7 +47,6 @@
     </q-drawer>
 
     <q-page-container>
-      <p>Account: {{ myAccounts }}</p>
       <router-view />
     </q-page-container>
 
@@ -67,7 +57,7 @@
 <script>
 import { ref } from "vue";
 import { menuList } from "./menuList";
-import * as msal from "@azure/msal-browser";
+import LoginButton from "../components/LoginButton.vue";
 
 export default {
   setup() {
@@ -76,41 +66,13 @@ export default {
       let textB = b.label.toUpperCase();
       return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
-
     const activeMenuItem = ref("");
-
     const pageTitle = ref("Hex Reports");
     function changePage(title, activeIcon) {
       pageTitle.value = title;
       activeMenuItem.value = activeIcon;
     }
-
     const leftDrawerOpen = ref(true);
-
-    const myAccounts = ref("");
-
-    const msalConfig = {
-      auth: {
-        clientId: "d3ecdd5a-cd64-4532-9b5f-71e00007efa8",
-        authority:
-          "https://login.microsoftonline.com/9ec541fd-d4e0-4871-bca6-3b6b57af5c9c",
-      },
-    };
-
-    const msalInstance = new msal.PublicClientApplication(msalConfig);
-
-    async function openAuthPopup() {
-      try {
-        await msalInstance
-          .loginPopup({
-            redirectUri: "http://localhost:8080/",
-          })
-          .then((myAccounts.value = msalInstance.getAllAccounts()));
-      } catch (err) {
-        // handle error
-      }
-    }
-
     return {
       pageTitle,
       changePage,
@@ -120,9 +82,8 @@ export default {
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
-      openAuthPopup,
-      myAccounts,
     };
   },
+  components: { LoginButton },
 };
 </script>
