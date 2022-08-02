@@ -1,12 +1,14 @@
 <template>
-  <q-avatar
-    class="userAvatar"
+  <q-btn
     v-if="userStore.loggedIn"
     @click="userStore.logout"
+    round
     color="green-8"
-    text-color="white"
-    >{{ userStore.userInitials }}</q-avatar
+    :label="userStore.userInitials"
   >
+    <q-tooltip class="bg-accent">Click to log out</q-tooltip>
+  </q-btn>
+
   <q-btn
     v-else
     @click="userStore.login"
@@ -21,9 +23,3 @@ import { storeUser } from "../stores/storeUser";
 
 const userStore = storeUser();
 </script>
-
-<style scoped>
-.userAvatar {
-  cursor: pointer;
-}
-</style>
