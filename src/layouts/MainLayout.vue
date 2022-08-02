@@ -72,6 +72,7 @@ export default {
       pageTitle.value = title;
       activeMenuItem.value = activeIcon;
     }
+
     const leftDrawerOpen = ref(true);
     return {
       pageTitle,

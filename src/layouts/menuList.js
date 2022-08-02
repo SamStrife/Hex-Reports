@@ -1,33 +1,38 @@
 const menuList = [
   {
-    icon: "speed",
     label: "Excess Mileage Calculator",
+    icon: "speed",
     routerLink: "/excesscalculator",
     title: "Excess Mileage Calculator",
+    requiresLogin: false,
   },
   {
-    icon: "local_shipping",
     label: "Delivery Cost Calculator",
+    icon: "local_shipping",
     routerLink: "/deliverycalculator",
     title: "Delivery Cost Calculator",
+    requiresLogin: false,
   },
   {
-    icon: "no_crash",
     label: "Vehicle Summary",
+    icon: "no_crash",
     routerLink: "/vehiclesummary",
     title: "Vehicle Summary Report",
+    requiresLogin: true,
   },
   {
-    icon: "fact_check",
     label: "Derby Yard Sheet",
+    icon: "fact_check",
     routerLink: "/derbyyardsheet",
     title: "Derby Yard Sheet",
+    requiresLogin: true,
   },
   {
-    icon: "map",
     label: "Supplier Map",
+    icon: "map",
     routerLink: "/suppliermap",
     title: "Derby Yard Sheet",
+    requiresLogin: true,
   },
 ];
 
