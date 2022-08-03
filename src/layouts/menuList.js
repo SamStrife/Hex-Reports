@@ -20,13 +20,13 @@ const menuList = [
     title: "Vehicle Summary Report",
     requiresLogin: true,
   },
-  {
-    label: "Derby Yard Sheet",
-    icon: "fact_check",
-    routerLink: "/derbyyardsheet",
-    title: "Derby Yard Sheet",
-    requiresLogin: true,
-  },
+  // {
+  //   label: "Derby Yard Sheet",
+  //   icon: "fact_check",
+  //   routerLink: "/derbyyardsheet",
+  //   title: "Derby Yard Sheet",
+  //   requiresLogin: true,
+  // },
   {
     label: "Asset File",
     icon: "list",

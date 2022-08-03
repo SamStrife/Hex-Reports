@@ -34,7 +34,7 @@ export const storeUser = defineStore("user", {
     async login() {
       try {
         await msalInstance.loginPopup({
-          redirectUri: "http://localhost:8080/",
+          redirectUri: "https://www.hexreports.com/",
         });
         let token = msalInstance.getAllAccounts();
         this.account = token;
@@ -45,7 +45,7 @@ export const storeUser = defineStore("user", {
     async logout() {
       try {
         await msalInstance.logoutPopup({
-          postLogoutRedirectUri: "http://localhost:8080/",
+          postLogoutRedirectUri: "https://www.hexreports.com/",
         });
         this.account = null;
       } catch (err) {
