@@ -252,7 +252,7 @@ export default {
       queryRanOnce.value = false;
       axios
         .get(
-          `http://139.59.171.54:5000/VehicleSummary/${vehicleRegistration.value}`
+          `https://139.59.171.54:5000/VehicleSummary/${vehicleRegistration.value}`
         )
         .then((response) => {
           requestReturn.value.manufacturer = response?.data?.manufacturer[0];
