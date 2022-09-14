@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import * as msal from "@azure/msal-browser";
 
+console.log(process.env.LOG_IN_REDIRECT_URI);
+
 const msalConfig = {
   auth: {
-    clientId: "d3ecdd5a-cd64-4532-9b5f-71e00007efa8",
-    authority:
-      "https://login.microsoftonline.com/9ec541fd-d4e0-4871-bca6-3b6b57af5c9c",
+    clientId: process.env.AZURE_CLIENT_ID,
+    authority: process.env.AZURE_AUTHORITY,
   },
 };
 
@@ -34,7 +35,7 @@ export const storeUser = defineStore("user", {
     async login() {
       try {
         await msalInstance.loginPopup({
-          redirectUri: "https://hexreports.com/",
+          redirectUri: process.env.LOG_IN_REDIRECT_URI,
         });
         let token = msalInstance.getAllAccounts();
         this.account = token;
@@ -45,7 +46,7 @@ export const storeUser = defineStore("user", {
     async logout() {
       try {
         await msalInstance.logoutPopup({
-          postLogoutRedirectUri: "https://hexreports.com/",
+          postLogoutRedirectUri: process.env.LOG_IN_REDIRECT_URI,
         });
         this.account = null;
       } catch (err) {
