@@ -27,13 +27,13 @@ const menuList = [
   //   title: "Derby Yard Sheet",
   //   requiresLogin: true,
   // },
-  {
-    label: "Asset File",
-    icon: "list",
-    routerLink: "/assetfile",
-    title: "Asset File",
-    requiresLogin: true,
-  },
+  // {
+  //   label: "Asset File",
+  //   icon: "list",
+  //   routerLink: "/assetfile",
+  //   title: "Asset File",
+  //   requiresLogin: true,
+  // },
 ];
 
 export { menuList };
