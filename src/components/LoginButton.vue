@@ -1,7 +1,7 @@
 <template>
   <q-btn
     v-if="userStore.loggedIn"
-    @click="userStore.logout"
+    @click="logOut"
     round
     color="green-8"
     :label="userStore.userInitials"
@@ -20,6 +20,13 @@
 
 <script setup>
 import { storeUser } from "../stores/storeUser";
+import { useRouter } from "vue-router";
 
 const userStore = storeUser();
+const router = useRouter();
+
+async function logOut() {
+  await userStore.logout();
+  router.replace("/");
+}
 </script>

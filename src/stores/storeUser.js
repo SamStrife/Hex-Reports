@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import * as msal from "@azure/msal-browser";
 
-console.log(process.env.LOG_IN_REDIRECT_URI);
-
 const msalConfig = {
   auth: {
     clientId: process.env.AZURE_CLIENT_ID,

@@ -72,6 +72,7 @@ const sortedMenu = menuList.sort(function (a, b) {
 const activeMenuItem = ref("");
 
 const pageTitle = ref("Hex Reports");
+
 function changePage(title, activeIcon) {
   pageTitle.value = title;
   activeMenuItem.value = activeIcon;
