@@ -20,6 +20,13 @@ const menuList = [
     title: "Vehicle Summary Report",
     requiresLogin: true,
   },
+  {
+    label: "Tax Checker",
+    icon: "workspace_premium",
+    routerLink: "/taxchecker",
+    title: "Vehicle Tax Checker",
+    requiresLogin: false,
+  },
   // {
   //   label: "Derby Yard Sheet",
   //   icon: "fact_check",
