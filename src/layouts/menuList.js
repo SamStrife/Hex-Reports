@@ -27,6 +27,20 @@ const menuList = [
     title: "Vehicle Tax Checker",
     requiresLogin: false,
   },
+  {
+    label: "Daily Spend KPI Demo",
+    icon: "payments",
+    routerLink: "/DailySpendKPIDemo",
+    title: "Daily Spend KPI Demo",
+    requiresLogin: true,
+  },
+  {
+    label: "Showing Stuff",
+    icon: "payments",
+    routerLink: "/showingstuff",
+    title: "Daily Spend KPI Demo",
+    requiresLogin: false,
+  },
   // {
   //   label: "Derby Yard Sheet",
   //   icon: "fact_check",

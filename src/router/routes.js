@@ -74,6 +74,26 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/DailySpendKPIDemo",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/DailySpendKPIDemo.vue"),
+      },
+    ],
+  },
+  {
+    path: "/showingstuff",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/ShowingStuff.vue"),
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it
