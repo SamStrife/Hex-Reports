@@ -26,6 +26,8 @@ routes.push({
   component: () => import("pages/ErrorNotFound.vue"),
 });
 
+export default routes;
+
 // const routes = [
 //   {
 //     path: "/",
@@ -130,5 +132,3 @@ routes.push({
 //     component: () => import("pages/ErrorNotFound.vue"),
 //   },
 // ];
-
-export default routes;

@@ -2,10 +2,8 @@
   <router-view />
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import { useQueryProvider } from "vue-query";
 
-export default defineComponent({
-  name: 'App'
-})
+useQueryProvider();
 </script>
