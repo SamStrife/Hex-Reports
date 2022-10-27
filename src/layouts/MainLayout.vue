@@ -11,7 +11,10 @@
           </router-link>
           {{ pageTitle }}
         </q-toolbar-title>
-        <LoginButton></LoginButton>
+        <div class="flex">
+          <FavouriteButton></FavouriteButton>
+          <LoginButton></LoginButton>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -60,6 +63,7 @@ import { ref } from "vue";
 import { menuList } from "./menuList";
 import LoginButton from "../components/LoginButton.vue";
 import { storeUser } from "../stores/storeUser";
+import FavouriteButton from "src/components/FavouriteButton.vue";
 
 const userStore = storeUser();
 
