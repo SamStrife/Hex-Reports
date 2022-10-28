@@ -14,6 +14,7 @@ const msalInstance = new msal.PublicClientApplication(msalConfig);
 export const storeUser = defineStore("user", {
   state: () => ({
     account: [],
+    favourites: [],
   }),
 
   getters: {
@@ -39,7 +40,7 @@ export const storeUser = defineStore("user", {
         let token = msalInstance.getAllAccounts();
         this.account = token;
         await connectToUserDB(this.account[0]["localAccountId"]);
-        getUserFavourites(this.account[0]["localAccountId"]);
+        this.setUserFavourites();
       } catch (err) {
         console.warn(err);
       }
@@ -54,17 +55,25 @@ export const storeUser = defineStore("user", {
         console.warn(err);
       }
     },
+    async setUserFavourites() {
+      this.favourites = [];
+      this.favourites = await getUserFavourites(
+        this.account[0]["localAccountId"]
+      );
+    },
   },
 });
 
 async function connectToUserDB(ms_user_id) {
-  return axios
-    .get(`https://api.hexreports.com/hexreports/${ms_user_id}`)
-    .then(function (response) {
-      console.log(`Response: ${response}`);
-    });
+  return axios.get(`https://api.hexreports.com/hexreports/login/${ms_user_id}`);
 }
 
-function getUserFavourites(id) {
-  console.log(`${id}: Users Favourite Reports: [Placeholder, Placeholder] `);
+async function getUserFavourites(ms_user_id) {
+  return axios
+    .get(
+      `https://api.hexreports.com/hexreports/user/${ms_user_id}/get_favourites`
+    )
+    .then(function (response) {
+      return response.data;
+    });
 }
