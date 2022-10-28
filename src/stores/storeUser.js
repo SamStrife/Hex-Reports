@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import * as msal from "@azure/msal-browser";
+import axios from "axios";
 
 const msalConfig = {
   auth: {
@@ -37,7 +38,7 @@ export const storeUser = defineStore("user", {
         });
         let token = msalInstance.getAllAccounts();
         this.account = token;
-        connectToUserDB(this.account[0]["localAccountId"]);
+        await connectToUserDB(this.account[0]["localAccountId"]);
         getUserFavourites(this.account[0]["localAccountId"]);
       } catch (err) {
         console.warn(err);
@@ -56,8 +57,12 @@ export const storeUser = defineStore("user", {
   },
 });
 
-function connectToUserDB(id) {
-  console.log(`${id} to Python API`);
+async function connectToUserDB(ms_user_id) {
+  return axios
+    .get(`https://api.hexreports.com/hexreports/${ms_user_id}`)
+    .then(function (response) {
+      console.log(`Response: ${response}`);
+    });
 }
 
 function getUserFavourites(id) {
