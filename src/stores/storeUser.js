@@ -37,6 +37,8 @@ export const storeUser = defineStore("user", {
         });
         let token = msalInstance.getAllAccounts();
         this.account = token;
+        connectToUserDB(this.account[0]["localAccountId"]);
+        getUserFavourites(this.account[0]["localAccountId"]);
       } catch (err) {
         console.warn(err);
       }
@@ -53,3 +55,11 @@ export const storeUser = defineStore("user", {
     },
   },
 });
+
+function connectToUserDB(id) {
+  console.log(`${id} to Python API`);
+}
+
+function getUserFavourites(id) {
+  console.log(`${id}: Users Favourite Reports: [Placeholder, Placeholder] `);
+}
