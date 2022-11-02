@@ -65,31 +65,36 @@ function get_supplier_jobs(supplier) {
   loading.value = true;
   const formData = new FormData();
   formData.append("Group Name", "Midlands Truck & Van");
-  formData.append("Supplier Name", null);
+  formData.append("Supplier Name", "");
 
-  return axios
-    .post(`https://api.hexreports.com/suppliers/getsupplierjobs`, formData)
-    .then(function (response) {
-      jobTableRows.value = [];
-      response.data.forEach((job) =>
-        jobTableRows.value.push({
-          jobNumber: job["Number"],
-          required: new Date(job["Required"]),
-          registration: job["Registration"],
-          vehicleType: job["Vehicle Type"],
-          status: job["Status"],
-          jobType: job["Job Type"],
-          supplier: job["Supplier"],
-          itemDescription: job["Item Description"],
-          labour: job["Labout Cost"],
-          parts: job["Parts Cost"],
-          cost: job["Cost"],
-          recharge: job["Recharge"],
-          daysVOR: job["Days Vehicle Off Road"],
-        })
-      );
-      loading.value = false;
-    });
+  return axios({
+    method: "post",
+    url: `https://api.hexreports.com/suppliers/getsupplierjobs`,
+    data: formData,
+    headers: { "Content-Type": "multipart/form-data" },
+  }).then(function (response) {
+    jobTableRows.value = [];
+    response.data.forEach((job) =>
+      jobTableRows.value.push({
+        jobNumber: job["Number"],
+        required: new Date(job["Required"]),
+        registration: job["Registration"],
+        vehicleType: job["Vehicle Type"],
+        status: job["Status"],
+        jobType: job["Job Type"],
+        distance: job["Distance"],
+        supplier: job["Supplier"],
+        customer: job["Customer"],
+        itemDescription: job["Item Description"],
+        labour: job["Labour"],
+        parts: job["Parts"],
+        cost: job["Cost"],
+        recharge: job["Recharge"],
+        daysVOR: job["Days Vehicle Off Road"],
+      })
+    );
+    loading.value = false;
+  });
 }
 
 activeSupplierFetcher();
