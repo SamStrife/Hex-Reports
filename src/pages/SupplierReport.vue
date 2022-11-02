@@ -1,14 +1,25 @@
 <template>
   <q-page class="flex column">
     <div class="q-pa-sm">
-      <q-btn-dropdown color="primary" label="Select Supplier">
+      <q-btn-dropdown class="q-pa-sm" color="primary" :label="selectedGroup">
         <q-list
-          @click="get_supplier_jobs(item)"
-          v-for="(item, index) in queryResponse"
+          v-model="selectedGroup"
+          v-for="(item, index) in supplierOrganisations"
           :key="index"
           >{{ item }}</q-list
         >
       </q-btn-dropdown>
+      <q-btn-dropdown class="q-pa-sm" color="primary" :label="selectedDepot">
+        <q-list
+          v-model="selectedDepot"
+          v-for="(item, index) in supplierDepots"
+          :key="index"
+          >{{ item }}</q-list
+        >
+      </q-btn-dropdown>
+      <q-btn @click="get_supplier_jobs('Midlands Truck & Van, Coventry')"
+        >Go</q-btn
+      >
     </div>
     <div class="flex q-pa-sm">
       <div class="flex q-pa-sm">
@@ -41,22 +52,23 @@ import axios from "axios";
 
 function activeSupplierFetcher() {
   return axios
-    .get("https://api.hexreports.com/allsuppliers")
+    .get("https://api.hexreports.com/suppliers/getsuppliers")
     .then(function (response) {
-      const suppliers = JSON.parse(response.data);
-      const suppliersArray = Object.values(suppliers).flat(1);
-      suppliersArray.forEach((supplier) => {
-        queryResponse.value.push(supplier);
+      response.data.forEach((supplier) => {
+        supplierOrganisations.value.add(supplier["Organisation Group Name"]);
+        supplierDepots.value.add(supplier["Trading Name"]);
       });
     });
 }
 
 function get_supplier_jobs(supplier) {
   loading.value = true;
+  const formData = new FormData();
+  formData.append("Group Name", "Midlands Truck & Van");
+  formData.append("Supplier Name", null);
 
-  console.log(`Clicked: ${supplier}`);
   return axios
-    .get(`https://api.hexreports.com/supplierquery/${supplier}`)
+    .post(`https://api.hexreports.com/suppliers/getsupplierjobs`, formData)
     .then(function (response) {
       jobTableRows.value = [];
       response.data.forEach((job) =>
@@ -67,6 +79,7 @@ function get_supplier_jobs(supplier) {
           vehicleType: job["Vehicle Type"],
           status: job["Status"],
           jobType: job["Job Type"],
+          supplier: job["Supplier"],
           itemDescription: job["Item Description"],
           labour: job["Labout Cost"],
           parts: job["Parts Cost"],
@@ -80,7 +93,11 @@ function get_supplier_jobs(supplier) {
 }
 
 activeSupplierFetcher();
-const queryResponse = ref([]);
+const supplierOrganisations = ref(new Set());
+const supplierDepots = ref(new Set());
+
+const selectedGroup = ref("Select A Supplier Group");
+const selectedDepot = ref("Select A Supplier Depot");
 
 const jobTableColumns = [
   {
@@ -268,7 +285,6 @@ const jobTableColumns = [
 const loading = ref(false);
 
 const jobTableRows = ref([]);
-
 const tableNoData = ref({ message: "No data, boss." });
 </script>
 
