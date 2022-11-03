@@ -22,9 +22,13 @@
       <q-btn @click="calculateMonthCost">Reduce</q-btn>
     </div>
     <div class="flex q-pa-sm">
+      <div class="flex">
+        <q-btn>Jobs By Depot</q-btn>
+        <q-btn>Jobs By Customer</q-btn>
+        <q-btn>Jobs By Type</q-btn>
+      </div>
       <q-table
         class="job-table"
-        title="Jobs By Depot"
         dense
         :rows="depotJobsRows"
         :columns="depotJobsColumns"
@@ -32,29 +36,24 @@
         :loading="loading"
         :no-data-label="tableNoData.message"
       />
-      <h1>{{ test }}</h1>
     </div>
     <div class="flex q-pa-sm">
-      <div class="flex q-pa-sm">
-        <q-table
-          class="job-table"
-          title="All Jobs"
-          dense
-          :rows="jobTableRows"
-          :columns="jobTableColumns"
-          row-key="jobNumber"
-          :loading="loading"
-          :no-data-label="tableNoData.message"
-        />
+      <div class="flex">
+        <q-btn>All Jobs</q-btn>
+        <q-btn @click="openJobs">Open Jobs</q-btn>
+        <q-btn>Complete Jobs</q-btn>
+        <q-btn>Jobs Awaiting Paperwork</q-btn>
+        <q-btn>Jobs Awaiting Cost</q-btn>
       </div>
-      <div class="flex column">
-        <q-card class="q-pa-sm">
-          <q-card-section> Open Jobs </q-card-section>
-        </q-card>
-        <q-card class="q-pa-sm">
-          <q-card-section> Awaiting Paperwork </q-card-section>
-        </q-card>
-      </div>
+      <q-table
+        class="job-table"
+        dense
+        :rows="jobTableRows"
+        :columns="jobTableColumns"
+        row-key="jobNumber"
+        :loading="loading"
+        :no-data-label="tableNoData.message"
+      />
     </div>
   </q-page>
 </template>
@@ -68,15 +67,12 @@ import { depotJobsColumns } from "../components/SupplierReport/depotJobsColumns.
 
 const loading = ref(false);
 
-const test = ref(Math.round(0 * 100) / 100);
-const testTable = ref([]);
+const test = ref(0);
 
 function calculateMonthCost() {
-  test.value = jobTableRows.value.reduce((accumulator, currentValue) => {
-    testTable.value.push([currentValue["cost"], typeof currentValue["cost"]]);
-    return accumulator + currentValue["cost"];
-  });
-  console.table(testTable.value);
+  test.value = jobTableRows.value.reduce(
+    (accumulator, currentValue) => accumulator + currentValue["cost"]
+  );
 }
 const supplierOrganisations = ref(new Set());
 const supplierDepots = ref(new Set());
@@ -86,6 +82,13 @@ const selectedDepot = ref("Select A Supplier Depot");
 const depotJobsRows = ref([]);
 
 const jobTableRows = ref([]);
+
+function openJobs() {
+  jobTableRows.value = jobTableRows.value.filter(
+    (job) => job["status"] == "Active"
+  );
+}
+
 const tableNoData = ref({ message: "No data, boss." });
 
 function selectSupplierGroup(group) {
