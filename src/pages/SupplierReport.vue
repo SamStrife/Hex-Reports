@@ -21,6 +21,9 @@
       <q-btn @click="clearFilters()">Clear</q-btn>
       <q-btn @click="calculateMonthCost">Reduce</q-btn>
     </div>
+    <div>
+      <h3>{{ test }}</h3>
+    </div>
     <div class="flex q-pa-sm">
       <div class="flex">
         <q-btn>Jobs By Depot</q-btn>
@@ -70,10 +73,11 @@ const loading = ref(false);
 const test = ref(0);
 
 function calculateMonthCost() {
-  test.value = jobTableRows.value.reduce(
-    (accumulator, currentValue) => accumulator + currentValue["cost"]
-  );
+  test.value = jobTableRows.value.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue["cost"];
+  }, 0);
 }
+
 const supplierOrganisations = ref(new Set());
 const supplierDepots = ref(new Set());
 const selectedGroup = ref("Select A Supplier Group");
