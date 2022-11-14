@@ -39,22 +39,14 @@ const menuList = [
   //   requiresLogin: true,
   //   vueFile: "DailySpendKPIDemo.vue",
   // },
-  {
-    label: "Supplier Report",
-    icon: "quiz",
-    routerLink: "/supplierreport",
-    title: "Supplier Report",
-    requiresLogin: false,
-    vueFile: "SupplierReport.vue",
-  },
-  {
-    label: "User Details",
-    icon: "payments",
-    routerLink: "/userdetails",
-    title: "Daily Spend KPI Demo",
-    requiresLogin: false,
-    vueFile: "UserDetails.vue",
-  },
+  // {
+  //   label: "Supplier Report",
+  //   icon: "quiz",
+  //   routerLink: "/supplierreport",
+  //   title: "Supplier Report",
+  //   requiresLogin: false,
+  //   vueFile: "SupplierReport.vue",
+  // },
   // {
   //   label: "Derby Yard Sheet",
   //   icon: "fact_check",
@@ -62,13 +54,14 @@ const menuList = [
   //   title: "Derby Yard Sheet",
   //   requiresLogin: true,
   // },
-  // {
-  //   label: "Asset File",
-  //   icon: "list",
-  //   routerLink: "/assetfile",
-  //   title: "Asset File",
-  //   requiresLogin: true,
-  // },
+  {
+    label: "Asset File",
+    icon: "list",
+    routerLink: "/assetfile",
+    title: "Asset File",
+    requiresLogin: true,
+    vueFile: "AssetFile.vue",
+  },
 ];
 
 export { menuList };
