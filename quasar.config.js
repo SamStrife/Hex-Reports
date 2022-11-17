@@ -209,7 +209,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: "excess-mileage-calculator",
+        appId: "HexReports",
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

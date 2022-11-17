@@ -8,65 +8,61 @@
         @click="requestAssetFile(requester)"
       />
     </div>
-    <div class="q-pa-md" v-if="accessLevel == 'su'">
+    <div class="q-pa-md">
       <q-btn-dropdown color="primary" :label="selectedSalesPerson">
         <q-list v-for="(person, index) in salesPeople" :key="index">
           <q-item
-            v-if="person.visability != 'hidden'"
             clickable
             v-close-popup
-            @click="selectSalesPerson(person.name)"
+            @click="selectSalesPerson(person)"
           >
             <q-item-section>
-              <q-item-label>{{ person.name }}</q-item-label>
+              <q-item-label>{{ person }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
       </q-btn-dropdown>
-      <q-btn @click="go">Go</q-btn>
+      <q-btn @click="go(selectedSalesPerson)">Go</q-btn>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
+import axios from "axios";
 import { storeUser } from "src/stores/storeUser.js";
+import { saveAs } from 'file-saver';
 
 const userStore = storeUser();
-
-const selectedSalesPerson = ref("Select A Sales Person");
-
 const requester = ref(userStore.userName);
 
-function requestAssetFile(username) {
-  console.log(`Requested by ${username}`);
-}
+const salesPeople = ref(['Steve Johnson', 'Nick Parker', 'Lesley Williams'])
+const selectedSalesPerson = ref("Select A Sales Person");
+
+// async function getSalesPeople(){
+//   return await axios.get('https://api.hexreports.com/getassetfile/salespeople')
+//                     .then(response => {
+//                     console.log(response.data);
+//                     salesPeople.value = response.data.split(',')
+//                     }
+//                     )}
 
 function selectSalesPerson(salesperson) {
   selectedSalesPerson.value = salesperson;
 }
 
-const accessLevel = computed(() => {
-  const sp = salesPeople.filter(
-    (salesperson) => salesperson["name"] == requester.value
-  );
-  return sp[0]["role"];
-});
-
-function go() {
-  console.log(`role: ${accessLevel.value}`);
+async function go(salesperson) {
+  console.log(`Running for ${salesperson}`);
+  await axios({
+              url: `https://api.hexreports.com/getassetfile/${salesperson}`,
+              method: 'GET',
+              responseType: 'blob',
+            }).then((response) => {
+              const file = new File([response.data], `af - ${salesperson}.xlsx`, {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+              saveAs(file)
+  });
 }
 
-const salesPeople = [
-  { name: "Sam Armstrong", role: "sp", visability: "visable" },
-  { name: "Sam Fletcher", role: "su", visability: "hidden" },
-  { name: "David Hodgkinson", role: "su", visability: "hidden" },
-  { name: "Steve Johnson", role: "sp", visability: "visable" },
-  { name: "Mark King", role: "sp", visability: "visable" },
-  { name: "Nick Parker", role: "sp", visability: "visable" },
-  { name: "Andrew Potter", role: "sp", visability: "visable" },
-  { name: "Martyn Sheridan", role: "sp", visability: "visable" },
-  { name: "Michael Webb", role: "su", visability: "visable" },
-  { name: "Lesley Williams", role: "sp", visability: "visable" },
-];
+// getSalesPeople()
+
 </script>
