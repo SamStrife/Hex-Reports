@@ -10,17 +10,24 @@
     </div>
     <div class="q-pa-md">
       <q-btn-dropdown color="primary" :label="selectedSalesPerson">
-        <q-list v-for="(person, index) in salesPeople" :key="index">
-          <q-item
-            clickable
-            v-close-popup
-            @click="selectSalesPerson(person)"
-          >
-            <q-item-section>
-              <q-item-label>{{ person }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <div v-if="salesPeopleLoading">
+          <q-list>
+            <q-skeleton type="text" width="100%" />
+            <q-skeleton type="text" width="100%" />
+            <q-skeleton type="text" width="100%" />
+            <q-skeleton type="text" width="100%" />
+            <q-skeleton type="text" width="100%" />
+          </q-list>
+        </div>
+        <div v-else>
+          <q-list v-for="(person, index) in salesPeople" :key="index">
+            <q-item clickable v-close-popup @click="selectSalesPerson(person)">
+              <q-item-section>
+                <q-item-label>{{ person }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
       </q-btn-dropdown>
       <q-btn @click="go(selectedSalesPerson)">Go</q-btn>
     </div>
@@ -28,24 +35,29 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import axios from "axios";
 import { storeUser } from "src/stores/storeUser.js";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
+import { useQuery } from "vue-query";
 
 const userStore = storeUser();
-const requester = ref(userStore.userName);
+const currentUser = ref(userStore.userName);
 
-const salesPeople = ref(['Steve Johnson', 'Nick Parker', 'Lesley Williams'])
+const salesPeople = ref([]);
+const salesPeopleLoading = ref(true);
 const selectedSalesPerson = ref("Select A Sales Person");
 
-// async function getSalesPeople(){
-//   return await axios.get('https://api.hexreports.com/getassetfile/salespeople')
-//                     .then(response => {
-//                     console.log(response.data);
-//                     salesPeople.value = response.data.split(',')
-//                     }
-//                     )}
+async function getSalesPeople() {
+  return await axios
+    .get("https://api.hexreports.com/getassetfile/salespeople")
+    .then((response) => {
+      response.data.forEach((person) => {
+        salesPeople.value.push(person);
+        salesPeopleLoading.value = false;
+      });
+    });
+}
 
 function selectSalesPerson(salesperson) {
   selectedSalesPerson.value = salesperson;
@@ -54,15 +66,16 @@ function selectSalesPerson(salesperson) {
 async function go(salesperson) {
   console.log(`Running for ${salesperson}`);
   await axios({
-              url: `https://api.hexreports.com/getassetfile/${salesperson}`,
-              method: 'GET',
-              responseType: 'blob',
-            }).then((response) => {
-              const file = new File([response.data], `af - ${salesperson}.xlsx`, {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-              saveAs(file)
+    url: `https://api.hexreports.com/getassetfile/${salesperson}`,
+    method: "GET",
+    responseType: "blob",
+  }).then((response) => {
+    const file = new File([response.data], `af - ${salesperson}.xlsx`, {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(file);
   });
 }
 
-// getSalesPeople()
-
+getSalesPeople();
 </script>
