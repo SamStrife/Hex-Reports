@@ -5,7 +5,7 @@
         color="primary"
         text-color="white"
         label="Download My Asset File"
-        @click="requestAssetFile(requester)"
+        @click="go(userStore.userName)"
       />
     </div>
     <div class="q-pa-md">
@@ -39,7 +39,6 @@ import { ref } from "vue";
 import axios from "axios";
 import { storeUser } from "src/stores/storeUser.js";
 import { saveAs } from "file-saver";
-import { useQuery } from "vue-query";
 
 const userStore = storeUser();
 const currentUser = ref(userStore.userName);
