@@ -5,11 +5,24 @@
         color="primary"
         text-color="white"
         label="Download My Asset File"
+        :disable="queryRunning"
         @click="go(userStore.userName)"
       />
     </div>
-    <div class="q-pa-md">
-      <q-btn-dropdown color="primary" :label="selectedSalesPerson">
+    <div
+      class="q-pa-md"
+      v-show="
+        userStore.userName == 'Sam Fletcher' ||
+        userStore.userName == 'Mark Fletcher' ||
+        userStore.userName == 'David Hodgkinson' ||
+        userStore.userName == 'Michael Webb'
+      "
+    >
+      <q-btn-dropdown
+        color="primary"
+        :label="selectedSalesPerson"
+        :disable="queryRunning"
+      >
         <div v-if="salesPeopleLoading">
           <q-list>
             <q-skeleton type="text" width="100%" />
@@ -21,7 +34,12 @@
         </div>
         <div v-else>
           <q-list v-for="(person, index) in salesPeople" :key="index">
-            <q-item clickable v-close-popup @click="selectSalesPerson(person)">
+            <q-item
+              :disable="queryRunning"
+              clickable
+              v-close-popup
+              @click="selectSalesPerson(person)"
+            >
               <q-item-section>
                 <q-item-label>{{ person }}</q-item-label>
               </q-item-section>
@@ -29,8 +47,9 @@
           </q-list>
         </div>
       </q-btn-dropdown>
-      <q-btn @click="go(selectedSalesPerson)">Go</q-btn>
+      <q-btn :disable="queryRunning" @click="go(selectedSalesPerson)">Go</q-btn>
     </div>
+    <q-spinner v-if="queryRunning" color="primary" size="3em" :thickness="10" />
   </div>
 </template>
 
@@ -46,6 +65,8 @@ const currentUser = ref(userStore.userName);
 const salesPeople = ref([]);
 const salesPeopleLoading = ref(true);
 const selectedSalesPerson = ref("Select A Sales Person");
+
+const queryRunning = ref(false);
 
 async function getSalesPeople() {
   return await axios
@@ -63,6 +84,7 @@ function selectSalesPerson(salesperson) {
 }
 
 async function go(salesperson) {
+  queryRunning.value = true;
   console.log(`Running for ${salesperson}`);
   await axios({
     url: `https://api.hexreports.com/getassetfile/${salesperson}`,
@@ -73,6 +95,7 @@ async function go(salesperson) {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
     saveAs(file);
+    queryRunning.value = false;
   });
 }
 
