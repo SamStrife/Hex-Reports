@@ -23,6 +23,14 @@ const menuList = [
     requiresLogin: true,
     vueFile: "VehicleSummary.vue",
   },
+  {
+    label: "Job Churn Report",
+    icon: "fact_check",
+    routerLink: "/jobchurn",
+    title: "Job Churn Report",
+    requiresLogin: true,
+    vueFile: "JobChurn.vue",
+  },
   // {
   //   label: "Tax Checker",
   //   icon: "workspace_premium",
