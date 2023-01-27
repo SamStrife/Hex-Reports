@@ -49,7 +49,13 @@
       </q-btn-dropdown>
       <q-btn :disable="queryRunning" @click="go(selectedSalesPerson)">Go</q-btn>
     </div>
-    <q-spinner v-if="queryRunning" color="primary" size="3em" :thickness="10" />
+    <q-spinner
+      v-if="queryRunning"
+      class="q-mt-md"
+      color="primary"
+      size="3em"
+      :thickness="10"
+    />
   </div>
 </template>
 
@@ -84,6 +90,8 @@ function selectSalesPerson(salesperson) {
 }
 
 async function go(salesperson) {
+  if (salesperson == "Select A Sales Person")
+    return alert("Please select a Sales Person.");
   queryRunning.value = true;
   console.log(`Running for ${salesperson}`);
   await axios({
