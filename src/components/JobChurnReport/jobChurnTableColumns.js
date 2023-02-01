@@ -1,0 +1,38 @@
+export const jobChurnTableColumns = [
+  {
+    name: "Date",
+    label: "Date",
+    field: "date",
+    required: false,
+    align: "left",
+    headerStyle: "width: 50px",
+    headerClasses: "table-header",
+  },
+  {
+    name: "Open Jobs",
+    label: "Open Jobs",
+    field: "openJobs",
+    required: false,
+    align: "left",
+    headerStyle: "width: 50px",
+    headerClasses: "table-header",
+  },
+  {
+    name: "Completed Jobs",
+    label: "Completed Jobs",
+    field: "completedJobs",
+    required: false,
+    align: "left",
+    headerStyle: "width: 50px",
+    headerClasses: "table-header",
+  },
+  {
+    name: "Average Days Open",
+    label: "Average Days Open",
+    field: "averageDaysOpen",
+    required: false,
+    align: "left",
+    headerStyle: "width: 50px",
+    headerClasses: "table-header",
+  },
+];
