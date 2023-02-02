@@ -38,7 +38,16 @@
       >
     </div>
     <div class="q-pa-md">
+      <q-skeleton height="400px" square v-if="loading" />
+      <Line
+        id="jobs-graph"
+        :options="chartOptions"
+        :data="chartData"
+        v-if="loaded"
+      />
       <VueApexCharts
+        v-if="loaded"
+        width="500"
         type="line"
         :series="apexSeries"
         :options="apexChartOptions"
@@ -58,6 +67,19 @@ import GenericButton from "src/components/GenericButton.vue";
 
 import VueApexCharts from "vue3-apexcharts";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  BarElement,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "vue-chartjs";
+
 import * as XLSX from "xlsx";
 
 const reportStartDate = ref();
@@ -67,25 +89,112 @@ function endDateOptions(caldate) {
   return caldate >= reportStartDate.value;
 }
 
+const tableRows = ref([]);
+const graphLabels = ref([]);
+const openJobGraphData = ref([]);
+const compelteJobGraphData = ref([]);
+const averageOpenDaysGraphData = ref([]);
+const targetOpenJobsGraphData = ref([]);
+
 const loading = ref(false);
 const loaded = ref(false);
 
-const tableRows = ref([]);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-const apexSeries = ref([]);
+const openjobs2 = computed(() => {
+  return [...openJobGraphData.value];
+});
+const completeJobs2 = computed(() => {
+  return [...compelteJobGraphData.value];
+});
+const averageDaysOpen2 = computed(() => {
+  return [...averageOpenDaysGraphData.value];
+});
+const target2 = computed(() => {
+  return [...targetOpenJobsGraphData.value];
+});
+
+const chartData = {
+  labels: graphLabels.value,
+  datasets: [
+    {
+      type: "line",
+      label: "Open Jobs",
+      data: openjobs2,
+      borderColor: "rgba(10,134,88,0.5)",
+      backgroundColor: "rgba(10,134,88,0.5)",
+    },
+    {
+      type: "bar",
+      label: "Compelted Jobs",
+      data: compelteJobGraphData.value,
+      borderColor: "rgba(144,44,158,0.5)",
+      backgroundColor: "rgba(144,44,158,0.5)",
+    },
+    {
+      type: "bar",
+      label: "Average Days Open",
+      data: averageOpenDaysGraphData.value,
+      borderColor: "rgba(12,44,101,0.5)",
+      backgroundColor: "rgba(12,44,101,0.5)",
+    },
+    {
+      type: "line",
+      label: "Target",
+      data: targetOpenJobsGraphData.value,
+      borderColor: "rgba(0,0,0,0.5)",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      pointStyle: false,
+      borderDash: [10, 10],
+    },
+  ],
+};
+
+const apexSeries = [
+  {
+    name: "Open Jobs",
+    data: openjobs2,
+  },
+  {
+    name: "Complete Jobs",
+    data: completeJobs2,
+  },
+  {
+    name: "Average Days Open",
+    data: averageDaysOpen2,
+  },
+  {
+    name: "Target",
+    data: target2,
+  },
+];
 
 const apexChartOptions = {
   chart: {
     id: "vuechart-example",
   },
+  xaxis: {
+    categories: graphLabels.value,
+  },
+};
+
+const chartOptions = {
+  responsive: true,
 };
 
 async function getJobChurn() {
   loading.value = true;
   loaded.value = false;
-
-  apexSeries.value = [];
-
+  openJobGraphData.value = [];
   await axios({
     method: "post",
     url: `https://api.hexreports.com/jobchurn/`,
@@ -95,26 +204,6 @@ async function getJobChurn() {
     },
     headers: { "Content-Type": "multipart/form-data" },
   }).then((response) => {
-    const graphLabels = [];
-
-    const openJobsArrayData = {
-      name: "Open Jobs",
-      type: "line",
-      data: [],
-    };
-
-    const completeJobsArrayData = {
-      name: "Complete Jobs",
-      type: "column",
-      data: [],
-    };
-
-    const averageOpenJobsArrayData = {
-      name: "Average Open Job Days",
-      type: "column",
-      data: [],
-    };
-
     response.data.JobChurn.forEach((e) => {
       const initialDate = new Date(Object.keys(e)[0]);
       const formattedDate = date.formatDate(initialDate, "DD/MM/YYYY");
@@ -131,16 +220,13 @@ async function getJobChurn() {
         "Avereage Days - Open Jobs": averageDaysOpen,
       });
 
-      graphLabels.push(formattedDate);
-      openJobsArrayData.data.push(openJobs);
-      completeJobsArrayData.data.push(completedJobs);
-      averageOpenJobsArrayData.data.push(averageDaysOpen);
+      graphLabels.value.push(formattedDate);
+      openJobGraphData.value.push(openJobs);
+      compelteJobGraphData.value.push(completedJobs);
+      averageOpenDaysGraphData.value.push(averageDaysOpen);
+      targetOpenJobsGraphData.value.push(600);
     });
-    apexSeries.value.push(openJobsArrayData);
-    apexSeries.value.push(completeJobsArrayData);
-    apexSeries.value.push(averageOpenJobsArrayData);
   });
-
   loading.value = false;
   loaded.value = true;
 }
