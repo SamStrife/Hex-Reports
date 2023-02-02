@@ -2,7 +2,7 @@ export const jobChurnTableColumns = [
   {
     name: "Date",
     label: "Date",
-    field: "date",
+    field: "Date",
     required: false,
     align: "left",
     headerStyle: "width: 50px",
@@ -11,7 +11,7 @@ export const jobChurnTableColumns = [
   {
     name: "Open Jobs",
     label: "Open Jobs",
-    field: "openJobs",
+    field: "Open Jobs",
     required: false,
     align: "left",
     headerStyle: "width: 50px",
@@ -20,7 +20,7 @@ export const jobChurnTableColumns = [
   {
     name: "Completed Jobs",
     label: "Completed Jobs",
-    field: "completedJobs",
+    field: "Compelted Jobs",
     required: false,
     align: "left",
     headerStyle: "width: 50px",
@@ -29,7 +29,7 @@ export const jobChurnTableColumns = [
   {
     name: "Average Days Open",
     label: "Average Days Open",
-    field: "averageDaysOpen",
+    field: "Avereage Days - Open Jobs",
     required: false,
     align: "left",
     headerStyle: "width: 50px",
