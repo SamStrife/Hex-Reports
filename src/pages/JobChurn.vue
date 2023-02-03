@@ -19,25 +19,10 @@
         </div>
       </q-form>
     </div>
-    <div class="q-pa-md">
-      <q-table
-        :columns="jobChurnTableColumns"
-        :no-data-label="'Please run the report...'"
-        :rows="tableRows"
-        :loading="loading"
-      >
-      </q-table>
-      <q-chip
-        v-if="loaded"
-        clickable
-        @click="downloadTable"
-        icon="file_download"
-        color="green-10"
-        text-color="white"
-        >Download</q-chip
-      >
+    <div class="q-pa-md" v-if="loading">
+      <q-skeleton height="500px" square />
     </div>
-    <div class="q-pa-md">
+    <div class="q-pa-md" v-if="loaded">
       <VueApexCharts
         type="line"
         :series="apexSeries"
@@ -53,38 +38,83 @@ import { ref, computed, reactive } from "vue";
 import axios from "axios";
 import { date } from "quasar";
 
-import { jobChurnTableColumns } from "../components/JobChurnReport/jobChurnTableColumns.js";
 import GenericButton from "src/components/GenericButton.vue";
 
 import VueApexCharts from "vue3-apexcharts";
 
-import * as XLSX from "xlsx";
-
 const reportStartDate = ref();
 const reportEndDate = ref();
-
-function endDateOptions(caldate) {
-  return caldate >= reportStartDate.value;
-}
-
 const loading = ref(false);
 const loaded = ref(false);
 
-const tableRows = ref([]);
-
-const apexSeries = ref([]);
-
-const apexChartOptions = {
-  chart: {
-    id: "vuechart-example",
+const apexSeries = reactive([
+  {
+    name: "Open Jobs",
+    type: "line",
+    data: [],
   },
-};
+  {
+    name: "Complete Jobs",
+    type: "column",
+    data: [],
+  },
+  {
+    name: "Average Open Job Days",
+    type: "column",
+    data: [],
+  },
+  {
+    name: "Target Open Jobs",
+    type: "line",
+    data: [],
+  },
+  {
+    name: "Max Open Jobs",
+    type: "line",
+    data: [],
+  },
+  {
+    name: "Min Open Jobs",
+    type: "line",
+    data: [],
+  },
+]);
+
+const apexChartOptions = reactive({
+  chart: {
+    id: "Open-Jobs",
+  },
+  animations: {
+    enabled: true,
+    easing: "easeinout",
+    speed: 800,
+    animateGradually: {
+      enabled: true,
+      delay: 150,
+    },
+    dynamicAnimation: {
+      enabled: true,
+      speed: 350,
+    },
+  },
+  colors: ["#286e0a", "#b981eb", "#81e4eb", "#86898a", "#f07d7d", "#68f059"],
+  stroke: {
+    width: [5, 1, 1, 5, 2, 2],
+    curve: "straight",
+    dashArray: [0, 0, 0, 5, 5, 5],
+  },
+  xaxis: {
+    type: "datetime",
+    categories: [],
+  },
+});
 
 async function getJobChurn() {
   loading.value = true;
   loaded.value = false;
 
   apexSeries.value = [];
+  apexChartOptions.xaxis.categories = [];
 
   await axios({
     method: "post",
@@ -95,60 +125,33 @@ async function getJobChurn() {
     },
     headers: { "Content-Type": "multipart/form-data" },
   }).then((response) => {
-    const graphLabels = [];
-
-    const openJobsArrayData = {
-      name: "Open Jobs",
-      type: "line",
-      data: [],
-    };
-
-    const completeJobsArrayData = {
-      name: "Complete Jobs",
-      type: "column",
-      data: [],
-    };
-
-    const averageOpenJobsArrayData = {
-      name: "Average Open Job Days",
-      type: "column",
-      data: [],
-    };
-
     response.data.JobChurn.forEach((e) => {
-      const initialDate = new Date(Object.keys(e)[0]);
-      const formattedDate = date.formatDate(initialDate, "DD/MM/YYYY");
+      const date = Date.parse(Object.keys(e)[0]);
       const openJobs = Object.values(e)[0]["Open Jobs"];
       const completedJobs = Object.values(e)[0]["Complete Jobs"];
       const averageDaysOpen = Math.round(
         Object.values(e)[0]["Average Days Open"]
       );
 
-      tableRows.value.push({
-        Date: formattedDate,
-        "Open Jobs": openJobs,
-        "Compelted Jobs": completedJobs,
-        "Avereage Days - Open Jobs": averageDaysOpen,
-      });
-
-      graphLabels.push(formattedDate);
-      openJobsArrayData.data.push(openJobs);
-      completeJobsArrayData.data.push(completedJobs);
-      averageOpenJobsArrayData.data.push(averageDaysOpen);
+      apexChartOptions.xaxis.categories.push(date);
+      apexSeries[0].data.push(openJobs);
+      apexSeries[1].data.push(completedJobs);
+      apexSeries[2].data.push(averageDaysOpen);
+      apexSeries[3].data.push(600);
     });
-    apexSeries.value.push(openJobsArrayData);
-    apexSeries.value.push(completeJobsArrayData);
-    apexSeries.value.push(averageOpenJobsArrayData);
-  });
 
+    apexSeries[4].data = new Array(apexSeries[0].data.length).fill(
+      Math.max.apply(null, apexSeries[0].data)
+    );
+    apexSeries[5].data = new Array(apexSeries[0].data.length).fill(
+      Math.min.apply(null, apexSeries[0].data)
+    );
+  });
   loading.value = false;
   loaded.value = true;
 }
 
-function downloadTable() {
-  const workbook = XLSX.utils.book_new();
-  let ws = XLSX.utils.json_to_sheet(tableRows.value);
-  XLSX.utils.book_append_sheet(workbook, ws, "Sheet 1");
-  XLSX.writeFileXLSX(workbook, "JobChurn.xlsx");
+function endDateOptions(caldate) {
+  return caldate >= reportStartDate.value;
 }
 </script>
