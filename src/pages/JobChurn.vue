@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from "vue";
+import { ref, reactive } from "vue";
 
 import axios from "axios";
 import { date } from "quasar";
@@ -113,7 +113,12 @@ async function getJobChurn() {
   loading.value = true;
   loaded.value = false;
 
-  apexSeries.value = [];
+  apexSeries[0].data = [];
+  apexSeries[1].data = [];
+  apexSeries[2].data = [];
+  apexSeries[3].data = [];
+  apexSeries[4].data = [];
+  apexSeries[5].data = [];
   apexChartOptions.xaxis.categories = [];
 
   await axios({
