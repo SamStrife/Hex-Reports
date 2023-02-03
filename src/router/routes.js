@@ -16,6 +16,7 @@ menuList.forEach((item) =>
       {
         path: "",
         component: () => import(`pages/${item.vueFile}`),
+        meta: { requiresAuth: item.requiresLogin },
       },
     ],
   })

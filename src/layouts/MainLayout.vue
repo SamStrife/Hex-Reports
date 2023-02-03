@@ -64,10 +64,8 @@ import { menuList } from "./menuList";
 import LoginButton from "../components/LoginButton.vue";
 import { storeUser } from "../stores/storeUser";
 import FavouriteButton from "src/components/FavouriteButton.vue";
-import { useRouter } from "vue-router";
 
 const userStore = storeUser();
-const router = useRouter();
 
 const sortedMenu = menuList.sort(function (a, b) {
   let textA = a.label.toUpperCase();
