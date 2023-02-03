@@ -24,12 +24,12 @@ const menuList = [
     vueFile: "VehicleSummary.vue",
   },
   {
-    label: "Job Churn Report",
+    label: "Open Job Report",
     icon: "fact_check",
-    routerLink: "/jobchurn",
-    title: "Job Churn Report",
+    routerLink: "/openjobs",
+    title: "Open Job Report",
     requiresLogin: true,
-    vueFile: "JobChurn.vue",
+    vueFile: "OpenJobReport.vue",
   },
   // {
   //   label: "Tax Checker",
