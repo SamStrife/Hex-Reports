@@ -6,6 +6,7 @@ import {
   createWebHashHistory,
 } from "vue-router";
 import routes from "./routes";
+import { storeUser } from "../stores/storeUser.js";
 
 /*
  * If not building with SSR mode, you can
@@ -33,6 +34,16 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(
       process.env.MODE === "ssr" ? void 0 : process.env.VUE_ROUTER_BASE
     ),
+  });
+
+  Router.beforeEach((to, from, next) => {
+    const userStore = storeUser();
+    if (to.meta.requiresAuth) {
+      if (userStore.loggedIn) return next();
+      if (!userStore.loggedIn) return next("/");
+    } else {
+      return next();
+    }
   });
 
   return Router;

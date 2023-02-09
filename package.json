@@ -1,8 +1,8 @@
 {
-  "name": "excess-mileage-calculator",
+  "name": "hexreports",
   "version": "0.0.1",
-  "description": "Excess Mileage Calculator",
-  "productName": "Excess Mileage Calculator",
+  "description": "Hexagon Leasing Report Suite",
+  "productName": "HexReports",
   "author": "Sam Fletcher <sam.a.fletcher@gmail.com>",
   "private": true,
   "scripts": {
