@@ -1,35 +1,43 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page>
     <div>
-      <div>
-        <p>Instructions</p>
-        <p>Download the event list from the event list page</p>
-        <p>Upload the file with the box below</p>
-        <p>Await the return file</p>
+      <div class="q-pa-md">
+        <p class="text-weight-bolder">Instructions:</p>
+        <p>
+          📋 Download the event list from the Event List Page on Simply Objects
+          - Make sure you apply your filters!
+        </p>
+        <p>🔽 Upload the file using the box below</p>
+        <p>
+          🏃‍♀️ Hit the "Run" button and your report should be back in around 10
+          seconds!
+        </p>
       </div>
-      <q-file
-        class="filebox"
-        accept=".xlsx"
-        max-files="1"
-        outlined
-        v-model="file"
-        clearable
-        hint="Upload 'Vehicle Events.xlsx'"
-        :error="fileSelectionError"
-        :error-message="fileSelectionErrorMessage"
-        :loading="isLoading"
-        :disable="isLoading"
-      >
-        <template v-slot:prepend>
-          <q-icon name="attach_file" />
-        </template>
-      </q-file>
-      <div class="q-pa-sm">
-        <q-btn
-          @click="sendFile"
-          :disable="fileSelectionError || noFileCheck || isLoading"
-          >Run</q-btn
+      <div class="flex column flex-center">
+        <q-file
+          class="filebox"
+          accept=".xlsx"
+          max-files="1"
+          outlined
+          v-model="file"
+          clearable
+          hint="Upload 'Vehicle Events.xlsx'"
+          :error="fileSelectionError"
+          :error-message="fileSelectionErrorMessage"
+          :loading="isLoading"
+          :disable="isLoading"
         >
+          <template v-slot:prepend>
+            <q-icon name="attach_file" />
+          </template>
+        </q-file>
+        <div class="q-pa-sm">
+          <q-btn
+            @click="sendFile"
+            :disable="fileSelectionError || noFileCheck || isLoading"
+            >Run</q-btn
+          >
+        </div>
       </div>
     </div>
 
@@ -41,7 +49,10 @@
 
         <q-card-section class="q-pt-none">
           <p>Sorry, there was a problem with the report</p>
-          <p>{{ queryReturnErrorMessage }}</p>
+          <div>
+            <p>Error Message:</p>
+            <p>{{ queryReturnErrorMessage }}</p>
+          </div>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -81,14 +92,13 @@ const noFileCheck = computed(() => {
 
 async function sendFile() {
   isLoading.value = true;
-  console.log(file.value);
   const formData = new FormData();
   formData.append("file", file.value);
 
   await axios({
-    url: `http://127.0.0.1:5000/filesend`,
+    url: `https://api.hexreports.com/eventlistreport`,
     method: "POST",
-    responseType: "blob",
+    responseType: "arraybuffer",
     data: formData,
   })
     .then((response) => {
@@ -100,8 +110,9 @@ async function sendFile() {
       isLoading.value = false;
     })
     .catch((error) => {
+      var errorDecoder = new TextDecoder();
       queryReturnError.value = true;
-      queryReturnErrorMessage.value = error;
+      queryReturnErrorMessage.value = errorDecoder.decode(error.response.data);
       isLoading.value = false;
     });
 }
