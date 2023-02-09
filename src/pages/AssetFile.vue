@@ -99,6 +99,7 @@ async function go(salesperson) {
     method: "GET",
     responseType: "blob",
   }).then((response) => {
+    console.log(response);
     const file = new File([response.data], `af - ${salesperson}.xlsx`, {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });

@@ -39,6 +39,14 @@ const menuList = [
     requiresLogin: false,
     vueFile: "BulkMotChecker.vue",
   },
+  {
+    label: "Event List Report",
+    icon: "checklist",
+    routerLink: "/eventlist",
+    title: "Event List Report",
+    requiresLogin: false,
+    vueFile: "EventListReport.vue",
+  },
   // {
   //   label: "Tax Checker",
   //   icon: "workspace_premium",
