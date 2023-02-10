@@ -72,7 +72,7 @@ const file = ref();
 
 const fileSelectionError = computed(() => {
   if (file.value == null) return false;
-  if (file.value.name !== "Vehicle Events.xlsx") return true;
+  // if (file.value.name.includes("Vehicle Events")) return true;
   return false;
 });
 
