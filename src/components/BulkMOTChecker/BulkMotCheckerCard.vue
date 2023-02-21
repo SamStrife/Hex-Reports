@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-card class="mot-card" bordered>
+    <q-card class="mot-card" bordered :style="cardBackGroundColour">
       <q-card-section>
         <div class="row justify-between">
           <div class="column">
@@ -62,15 +62,24 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import MOTDateChip from "./MOTDateChip.vue";
 import MOTHistoryCard from "./MOTHistoryCard.vue";
 import axios from "axios";
+import { date } from "quasar";
 
 const expanded = ref(false);
 const loading = ref(false);
 
-const registration = ref("DX12AEA");
+const props = defineProps(["registration"]);
+const registration = computed(() => props.registration);
+
+const cardBackGroundColour = computed(() => {
+  if (date.getDateDiff(data.govMotDueDate, data.systemMotDate, "days") != 0) {
+    return "background: linear-gradient(90deg, #f7bdbd, #ff4848)";
+  }
+  return null;
+});
 
 const data = reactive({
   govMotDueDate: null,
@@ -94,7 +103,6 @@ async function getData() {
   data.modelName = responseData.data["modelName"];
   data.motHistory = responseData.data["motHistory"];
   loading.value = false;
-  console.log(data.motHistory);
 }
 
 getData();

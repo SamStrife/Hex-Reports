@@ -1,34 +1,42 @@
 <template>
-  <div class="flex">
-    <div class="q-pa-md" style="max-width: 300px">
-      <q-input v-model="registrations" filled type="textarea" />
+  <div class="row">
+    <div class="column basis-1/4">
+      <div class="q-pa-md" style="max-width: 300px">
+        <div>
+          <q-input v-model="registrations" filled type="textarea" autogrow />
+        </div>
+        <div class="q-py-sm">
+          <q-btn @click="addToMOTArray">Check</q-btn>
+        </div>
+      </div>
     </div>
-    <div class="q-pa-md">
-      <q-markup-table>
-        <thead>
-          <tr>
-            <th class="text-left">Registration</th>
-            <th class="text-right">MOT Expiry</th>
-          </tr>
-        </thead>
-        <tbody v-for="(registration, index) in registrationArray" :key="index">
-          <tr>
-            <td class="text-left">{{ registration.toUpperCase() }}</td>
-            <td class="text-right"></td>
-          </tr>
-        </tbody>
-      </q-markup-table>
+    <div class="column">
+      <div
+        v-for="(registration, index) in lookupArray"
+        :key="index"
+        class="q-pa-xs"
+      >
+        <BulkMotCheckerCard :registration="registration"></BulkMotCheckerCard>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
+import BulkMotCheckerCard from "../components/BulkMOTChecker/BulkMotCheckerCard.vue";
 
 const registrations = ref("");
+const registrationArray = ref([]);
+const lookupArray = computed(() => new Set(registrationArray?.value));
 
-const registrationArray = computed(() => {
+function addToMOTArray() {
   const array = registrations.value.split(/\r?\n/);
-  return new Set(array);
-});
+
+  for (const registration of array) {
+    registrationArray.value.push(registration.toUpperCase());
+  }
+}
 </script>
+
+<style scoped></style>

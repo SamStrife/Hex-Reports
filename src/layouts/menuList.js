@@ -31,14 +31,14 @@ const menuList = [
     requiresLogin: true,
     vueFile: "OpenJobReport.vue",
   },
-  // {
-  //   label: "Bulk MOT Checker",
-  //   icon: "checklist",
-  //   routerLink: "/bulkmots",
-  //   title: "Bulk MOT Checker",
-  //   requiresLogin: false,
-  //   vueFile: "BulkMotChecker.vue",
-  // },
+  {
+    label: "Bulk MOT Checker",
+    icon: "checklist",
+    routerLink: "/bulkmots",
+    title: "Bulk MOT Checker",
+    requiresLogin: false,
+    vueFile: "BulkMotChecker.vue",
+  },
   {
     label: "Event List Report",
     icon: "table_chart",

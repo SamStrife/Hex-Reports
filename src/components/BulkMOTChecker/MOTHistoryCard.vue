@@ -39,7 +39,7 @@
                 Number Of Advisories
               </div>
               <div class="text q-px-sm">
-                <q-chip clickable @click="showDefects('advisories')">
+                <q-chip clickable @click="openDefectsDialog">
                   {{ mot.numberOfAdvisoryDefectsAtTest }}</q-chip
                 >
               </div>
@@ -49,7 +49,7 @@
                 Number Of Defects
               </div>
               <div class="text q-px-sm">
-                <q-chip clickable @click="showDefects('defects')">
+                <q-chip clickable @click="openDefectsDialog">
                   {{ mot.numberOfDefectsAtTest }}</q-chip
                 >
               </div>
@@ -64,10 +64,31 @@
     <q-dialog v-model="defectsDialogOpen">
       <q-card>
         <q-card-section>
-          <div class="text-h6">{{ defectsDialogTitle }}</div>
+          <div class="text-h6">Defects</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none">{{ motDefects }} </q-card-section>
+        <q-card-section>
+          <div class="q-pa-md">
+            <q-markup-table>
+              <thead>
+                <tr>
+                  <th class="text-left">Item Number</th>
+                  <th class="text-left">Failure Reason</th>
+                  <th class="text-left">Severity Code</th>
+                  <th class="text-left">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(defect, index) in motDefects" :key="index">
+                  <td class="text-left">{{ defect.failureItemNo }}</td>
+                  <td class="text-left">{{ defect.failureReason }}</td>
+                  <td class="text-left">{{ defect.severityCode }}</td>
+                  <td class="text-left">{{ defect.severityDescription }}</td>
+                </tr>
+              </tbody>
+            </q-markup-table>
+          </div>
+        </q-card-section>
 
         <q-card-actions align="right">
           <q-btn flat label="Close" color="primary" v-close-popup />
@@ -85,21 +106,11 @@ import MOTPassChip from "./MOTPassChip.vue";
 const props = defineProps(["mot"]);
 
 const defectsDialogOpen = ref(false);
-const defectsDialogTitle = ref("");
 
 const motDefects = computed(() => props?.mot?.defects);
-console.log(motDefects);
 
-function showDefects(type) {
+function openDefectsDialog() {
   if (!motDefects.value) return;
-
-  if (type == "advisories") {
-    defectsDialogTitle.value = "Advisories";
-  }
-  if (type == "defects") {
-    defectsDialogTitle.value = "Defects";
-  }
-
   defectsDialogOpen.value = true;
 }
 </script>
