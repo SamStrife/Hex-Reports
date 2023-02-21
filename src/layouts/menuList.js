@@ -47,6 +47,14 @@ const menuList = [
     requiresLogin: true,
     vueFile: "EventListReport.vue",
   },
+  {
+    label: "Testing",
+    icon: "table_chart",
+    routerLink: "/testing",
+    title: "Testing Page",
+    requiresLogin: false,
+    vueFile: "TestPage.vue",
+  },
   // {
   //   label: "Tax Checker",
   //   icon: "workspace_premium",
