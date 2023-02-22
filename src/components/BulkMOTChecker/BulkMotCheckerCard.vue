@@ -15,14 +15,17 @@
               </div>
             </div>
           </div>
-          <div class="column">
+          <div v-if="isError">
+            Sorry, there was an error processing this request
+          </div>
+          <div v-if="!isError" class="column">
             <div class="text-overline text-grey-9">System MOT Date</div>
             <MOTDateChip
               :date="data.systemMotDate"
               :loading="loading"
             ></MOTDateChip>
           </div>
-          <div class="column">
+          <div v-if="!isError" class="column">
             <div class="text-overline text-grey-9">Government MOT Date</div>
             <MOTDateChip
               :date="data.govMotDueDate"
@@ -46,7 +49,11 @@
         <div v-show="expanded">
           <q-separator />
           <q-card-section class="text-subitle2">
-            <div>
+            <div v-if="isError">{{ errorMessage }}</div>
+            <div v-if="!isError && !data.motHistory" class="row justify-center">
+              <p>Sorry, there is not MOT history available for this vehicle</p>
+            </div>
+            <div v-if="!isError && data.motHistory">
               <MOTHistoryCard
                 class="q-py-sm"
                 v-for="(mot, index) in data.motHistory"
@@ -74,6 +81,9 @@ const loading = ref(false);
 const props = defineProps(["registration"]);
 const registration = computed(() => props.registration);
 
+const isError = ref(false);
+const errorMessage = ref();
+
 const cardBackGroundColour = computed(() => {
   if (date.getDateDiff(data.govMotDueDate, data.systemMotDate, "days") != 0) {
     return "background: linear-gradient(90deg, #f7bdbd, #ff4848)";
@@ -92,17 +102,23 @@ const data = reactive({
 async function getData() {
   loading.value = true;
   let responseData = null;
-  await axios
-    .get(`https://api.hexreports.com/bulkMOTCheck/${registration.value}`)
-    .then((response) => {
-      responseData = response;
-    });
-  data.systemMotDate = responseData.data["systemMOTDate"];
-  data.govMotDueDate = responseData.data["govMotDueDate"];
-  data.manufacturerName = responseData.data["manufacturerName"];
-  data.modelName = responseData.data["modelName"];
-  data.motHistory = responseData.data["motHistory"];
-  loading.value = false;
+  try {
+    await axios
+      .get(`https://api.hexreports.com/bulkMOTCheck/${registration.value}`)
+      .then((response) => {
+        responseData = response;
+      });
+    data.systemMotDate = responseData.data["systemMOTDate"];
+    data.govMotDueDate = responseData.data["govMotDueDate"];
+    data.manufacturerName = responseData.data["manufacturerName"];
+    data.modelName = responseData.data["modelName"];
+    data.motHistory = responseData.data["motHistory"];
+    loading.value = false;
+  } catch (error) {
+    isError.value = true;
+    errorMessage.value = error.message;
+    loading.value = false;
+  }
 }
 
 getData();

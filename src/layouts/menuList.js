@@ -36,7 +36,7 @@ const menuList = [
     icon: "checklist",
     routerLink: "/bulkmots",
     title: "Bulk MOT Checker",
-    requiresLogin: false,
+    requiresLogin: true,
     vueFile: "BulkMotChecker.vue",
   },
   {
@@ -46,14 +46,6 @@ const menuList = [
     title: "Event List Report",
     requiresLogin: true,
     vueFile: "EventListReport.vue",
-  },
-  {
-    label: "Testing",
-    icon: "table_chart",
-    routerLink: "/testing",
-    title: "Testing Page",
-    requiresLogin: false,
-    vueFile: "TestPage.vue",
   },
   // {
   //   label: "Tax Checker",
