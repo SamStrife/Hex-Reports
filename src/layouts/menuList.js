@@ -47,6 +47,14 @@ const menuList = [
     requiresLogin: true,
     vueFile: "EventListReport.vue",
   },
+  {
+    label: "Heat Map",
+    icon: "pin_drop",
+    routerLink: "/heatmap",
+    title: "Heat Map",
+    requiresLogin: false,
+    vueFile: "HeatMap.vue",
+  },
   // {
   //   label: "Tax Checker",
   //   icon: "workspace_premium",
