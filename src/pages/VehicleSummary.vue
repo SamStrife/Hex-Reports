@@ -125,6 +125,22 @@
             </q-card>
             <br />
           </div>
+          <div class="q-pa-md" key="daysSinceHire">
+            <q-card>
+              <q-card-section class="bg-primary text-white">
+                <div class="text-h6">Days Since Last Hire</div>
+              </q-card-section>
+              <q-separator />
+              <div
+                class="q-pa-md text-h6"
+                v-if="requestReturn?.daysSinceLastHire"
+              >
+                {{ requestReturn.daysSinceLastHire }}
+              </div>
+              <div class="q-pa-md text-h6" v-else><br /></div>
+            </q-card>
+            <br />
+          </div>
           <div class="q-pa-md" key="Inspection">
             <q-card>
               <q-card-section
@@ -236,6 +252,7 @@ export default {
       daysUntilInspection: null,
       monthsUntilMOT: null,
       monthsUntilTacho: null,
+      daysSinceLastHire: null,
     });
 
     const queryRanOnce = ref(false);
@@ -290,7 +307,8 @@ export default {
             new Date(),
             "months"
           );
-          console.log(response);
+          requestReturn.value.daysSinceLastHire =
+            response?.data?.daysSinceLastHire[0];
           queryRanOnce.value = true;
         });
     }
