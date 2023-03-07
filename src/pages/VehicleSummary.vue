@@ -15,7 +15,7 @@
       <div v-if="!queryRanOnce">
         <div class="q-pa-md"></div>
       </div>
-      <div v-else-if="queryRanOnce && requestReturn.manufacturer">
+      <div v-else-if="queryRanOnce && !requestReturn.message">
         <transition-group
           appear
           enter-active-class="animated fadeInUp"
@@ -212,13 +212,11 @@
           <div class="q-pa-md">
             <q-card>
               <q-card-section class="bg-red-10 text-white">
-                <div class="text-h6">Vehicle Not Found</div>
+                <div class="text-h6">Error</div>
               </q-card-section>
               <q-separator />
-              <div class="q-pa-md text-h6">
-                Sorry but we could not find a vehicle matching that
-                registration. Please ensure you have entered the correct
-                registration number and try again.
+              <div class="q-pa-md text-h6" v-if="requestReturn?.message">
+                {{ requestReturn.message }}
               </div>
             </q-card>
             <br />
@@ -253,6 +251,7 @@ export default {
       monthsUntilMOT: null,
       monthsUntilTacho: null,
       daysSinceLastHire: null,
+      message: null,
     });
 
     const queryRanOnce = ref(false);
@@ -272,6 +271,13 @@ export default {
           `https://api.hexreports.com/VehicleSummary/${vehicleRegistration.value}`
         )
         .then((response) => {
+          queryRanOnce.value = true;
+          requestReturn.value.message = null;
+
+          if (response?.data?.message != null) {
+            requestReturn.value.message = response?.data?.message;
+            return;
+          }
           requestReturn.value.manufacturer = response?.data?.manufacturer[0];
           requestReturn.value.model = response?.data?.model[0];
           requestReturn.value.vehicleType = response?.data?.vehicleType[0];
@@ -309,7 +315,6 @@ export default {
           );
           requestReturn.value.daysSinceLastHire =
             response?.data?.daysSinceLastHire[0];
-          queryRanOnce.value = true;
         });
     }
 
