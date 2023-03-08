@@ -7,6 +7,7 @@
         </div>
         <div class="q-py-sm">
           <q-btn @click="addToMOTArray">Check</q-btn>
+          <q-btn @click="clearMOTArray">Clear</q-btn>
         </div>
       </div>
     </div>
@@ -36,6 +37,10 @@ function addToMOTArray() {
   for (const registration of array) {
     registrationArray.value.push(registration.toUpperCase());
   }
+}
+
+function clearMOTArray() {
+  registrationArray.value = [];
 }
 </script>
 
