@@ -15,7 +15,7 @@
       <div
         v-for="(registration, index) in lookupArray"
         :key="index"
-        class="q-pa-xs"
+        class="q-pa-xs motCard"
       >
         <BulkMotCheckerCard :registration="registration"></BulkMotCheckerCard>
       </div>
@@ -44,4 +44,8 @@ function clearMOTArray() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.motCard {
+  width: 90vw;
+}
+</style>

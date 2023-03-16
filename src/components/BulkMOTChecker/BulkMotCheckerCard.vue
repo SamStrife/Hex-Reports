@@ -124,8 +124,4 @@ async function getData() {
 getData();
 </script>
 
-<style lang="sass" scoped>
-.mot-card
-  min-width: 650px
-  max-width: 650px
-</style>
+<style scoped></style>
