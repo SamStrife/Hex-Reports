@@ -47,6 +47,14 @@ const menuList = [
     requiresLogin: true,
     vueFile: "EventListReport.vue",
   },
+  {
+    label: "Rental Agreement Audit",
+    icon: "assignment",
+    routerLink: "/rentalagreementaudit",
+    title: "Rental Agreement Audit",
+    requiresLogin: false,
+    vueFile: "RentalAgreementAudit.vue",
+  },
   // {
   //   label: "Heat Map",
   //   icon: "pin_drop",
