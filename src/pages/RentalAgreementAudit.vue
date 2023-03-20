@@ -2,7 +2,7 @@
   <q-page class="flex-center">
     <div class="column">
       <div class="section">
-        <h1>Stats</h1>
+        <h1>{{ totalHires }}</h1>
       </div>
       <div class="section">
         <h1>Rental Table</h1>
@@ -15,7 +15,20 @@
   </q-page>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref, onBeforeMount, onUpdated } from "vue";
+import { useRentalAuditStore } from "src/stores/RentalAuditStore";
+
+const audits = useRentalAuditStore();
+
+const totalHires = ref();
+
+onBeforeMount(() => {
+  audits.getData();
+});
+
+totalHires.value = audits.totalRentals;
+</script>
 
 <style>
 .section {
