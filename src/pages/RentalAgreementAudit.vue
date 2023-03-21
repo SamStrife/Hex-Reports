@@ -1,14 +1,34 @@
 <template>
-  <q-page class="flex-center">
+  <q-page>
     <div class="column">
       <div>
         <h1>Table Fitlers</h1>
       </div>
+      <section class="row q-pa-md justify-evenly">
+        <div id="chart">
+          <vue-apex-charts
+            type="radialBar"
+            :options="chartOptions"
+            :series="series"
+          ></vue-apex-charts>
+        </div>
+        <div id="chart">
+          <vue-apex-charts
+            type="radialBar"
+            :options="chartOptions"
+            :series="series"
+          ></vue-apex-charts>
+        </div>
+        <div id="chart">
+          <vue-apex-charts
+            type="radialBar"
+            :options="chartOptions"
+            :series="series"
+          ></vue-apex-charts>
+        </div>
+      </section>
       <div>
-        <h1>{{ audits.totalRentals }}</h1>
-      </div>
-      <div>
-        <div class="q-pa-md rentalTable">
+        <div class="q-pa-md">
           <q-table
             class="my-sticky-dynamic"
             title="Rentals"
@@ -40,7 +60,9 @@
                   {{ props.row["Customer Name"] }}
                 </q-td>
                 <q-td key="hireStart" :props="props">
-                  {{ props.row["Hire Start Date"] }}
+                  {{
+                    date.formatDate(props.row["Hire Start Date"], "DD/MM/YYYY")
+                  }}
                 </q-td>
                 <q-td key="hireType" :props="props">
                   {{ props.row["Hire Type Name"] }}
@@ -81,7 +103,7 @@
         </div>
       </div>
       <div class="row">
-        <div>
+        <div class="col-6">
           <div class="q-pa-md">
             <q-table
               class="my-sticky-dynamic"
@@ -94,6 +116,7 @@
               :virtual-scroll-item-size="48"
               :virtual-scroll-sticky-size-start="48"
               :rows-per-page-options="[0]"
+              no-data-label="No matching documents found"
             >
               <template v-slot:loading>
                 <q-inner-loading showing color="primary" />
@@ -107,7 +130,9 @@
                     {{ props.row["Description"] }}
                   </q-td>
                   <q-td key="uploadDate" :props="props">
-                    {{ props.row["DateUpdated"] }}
+                    {{
+                      date.formatDate(props.row["DateUpdated"], "DD/MM/YYYY")
+                    }}
                   </q-td>
                   <q-td key="select" :props="props">
                     <q-chip
@@ -130,7 +155,7 @@
             </q-table>
           </div>
         </div>
-        <div>
+        <div class="col-6">
           <div class="q-pa-md">
             <q-table
               class="my-sticky-dynamic"
@@ -143,6 +168,7 @@
               :virtual-scroll-item-size="48"
               :virtual-scroll-sticky-size-start="48"
               :rows-per-page-options="[0]"
+              no-data-label="No matching documents found"
             >
               <template v-slot:loading>
                 <q-inner-loading showing color="primary" />
@@ -156,10 +182,23 @@
                     {{ props.row["Description"] }}
                   </q-td>
                   <q-td key="uploadDate" :props="props">
-                    {{ props.row["DateUpdated"] }}
+                    {{
+                      date.formatDate(props.row["DateUpdated"], "DD/MM/YYYY")
+                    }}
                   </q-td>
                   <q-td key="select" :props="props">
-                    <q-chip clickable color="green" text-color="white">
+                    <q-chip
+                      clickable
+                      color="green"
+                      text-color="white"
+                      @click="
+                        handleDocumentSelection(
+                          selectedRA,
+                          props.row['ID'],
+                          'CheckOutDocNumber'
+                        )
+                      "
+                    >
                       This One!
                     </q-chip>
                   </q-td>
@@ -176,6 +215,8 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
 import { useRentalAuditStore } from "src/stores/RentalAuditStore";
+import { date } from "quasar";
+import VueApexCharts from "vue3-apexcharts";
 
 const audits = useRentalAuditStore();
 const selectedRA = ref();
@@ -183,6 +224,54 @@ const selectedRA = ref();
 onBeforeMount(() => {
   audits.getData();
 });
+
+const series = [76];
+const chartOptions = {
+  chart: {
+    type: "radialBar",
+    offsetY: -20,
+    sparkline: {
+      enabled: true,
+    },
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -90,
+      endAngle: 90,
+      track: {
+        background: "#e7e7e7",
+        strokeWidth: "97%",
+        margin: 5, // margin is in pixels
+        dropShadow: {
+          enabled: true,
+          top: 2,
+          left: 0,
+          color: "#999",
+          opacity: 1,
+          blur: 2,
+        },
+      },
+      dataLabels: {
+        name: {
+          show: true,
+        },
+        value: {
+          offsetY: -35,
+          fontSize: "18px",
+        },
+      },
+    },
+  },
+  grid: {
+    padding: {
+      top: -10,
+    },
+  },
+  fill: {
+    type: "solid",
+  },
+  labels: ["Average Results"],
+};
 
 const rentalColumns = [
   {
@@ -251,10 +340,10 @@ const documentColumns = [
   },
 ];
 
-function handleRowClick(agreementNumber, vehicleID) {
+async function handleRowClick(agreementNumber, vehicleID) {
   if (!audits.documentsLoading) {
     selectedRA.value = agreementNumber;
-    audits.getDocumentsForRental(vehicleID);
+    await audits.getDocumentsForRental(vehicleID);
   }
 }
 

@@ -71,7 +71,7 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
             const documentIndex = this.rentalData.findIndex(
               (document) => document["Unique ID"] == rentalAgreementNumber
             );
-            this.rentalData[documentIndex]["RADocNumber"] = documentNumber;
+            this.rentalData[documentIndex][documentType] = documentNumber;
           } else {
             alert("There was a problem processing this request");
           }
