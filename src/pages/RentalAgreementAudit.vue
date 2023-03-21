@@ -1,25 +1,83 @@
 <template>
   <q-page class="flex-center">
     <div class="column">
-      <div class="section">
+      <div>
+        <h1>Table Fitlers</h1>
+      </div>
+      <div>
         <h1>{{ audits.totalRentals }}</h1>
       </div>
       <div>
-        <div class="q-pa-md">
+        <div class="q-pa-md rentalTable">
           <q-table
             class="my-sticky-dynamic"
             title="Rentals"
             :rows="audits.rentalData"
             :columns="rentalColumns"
-            :loading="loading"
-            row-key="index"
+            row-key="Unique ID"
             virtual-scroll
             :virtual-scroll-item-size="48"
             :virtual-scroll-sticky-size-start="48"
-            :pagination="pagination"
             :rows-per-page-options="[0]"
-            @virtual-scroll="onScroll"
-          />
+          >
+            <template v-slot:body="props">
+              <q-tr
+                :props="props"
+                @click="
+                  handleRowClick(
+                    props.row['Unique ID'],
+                    props.row['Vehicle Unique ID']
+                  )
+                "
+              >
+                <q-td key="agreementNumber" :props="props">
+                  {{ props.row["Unique ID"] }}
+                </q-td>
+                <q-td key="registration" :props="props">
+                  {{ props.row["Registration"] }}
+                </q-td>
+                <q-td key="customer" :props="props">
+                  {{ props.row["Customer Name"] }}
+                </q-td>
+                <q-td key="hireStart" :props="props">
+                  {{ props.row["Hire Start Date"] }}
+                </q-td>
+                <q-td key="hireType" :props="props">
+                  {{ props.row["Hire Type Name"] }}
+                </q-td>
+                <q-td key="live" :props="props">
+                  <q-chip
+                    color="green"
+                    text-color="white"
+                    label="Yes"
+                    v-if="props.row['Live']"
+                  />
+                  <q-chip
+                    color="red"
+                    text-color="white"
+                    label="No"
+                    v-else
+                  ></q-chip>
+                </q-td>
+                <q-td key="rentalAgreement" :props="props">
+                  <q-chip
+                    color="green"
+                    text-color="white"
+                    label="Yes"
+                    v-if="props.row['RADocNumber']"
+                  />
+                </q-td>
+                <q-td key="checkOut" :props="props">
+                  <q-chip
+                    color="green"
+                    text-color="white"
+                    label="Yes"
+                    v-if="props.row['CheckOutDocNumber']"
+                  />
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
         </div>
       </div>
       <div class="row">
@@ -28,17 +86,48 @@
             <q-table
               class="my-sticky-dynamic"
               title="Rental Agreements For Hire"
-              :rows="audits.rentalData"
-              :columns="rentalColumns"
-              :loading="loading"
+              :rows="audits.rentalAgreements"
+              :columns="documentColumns"
+              :loading="audits.documentsLoading"
               row-key="index"
               virtual-scroll
               :virtual-scroll-item-size="48"
               :virtual-scroll-sticky-size-start="48"
-              :pagination="pagination"
               :rows-per-page-options="[0]"
-              @virtual-scroll="onScroll"
-            />
+            >
+              <template v-slot:loading>
+                <q-inner-loading showing color="primary" />
+              </template>
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td key="ID" :props="props">
+                    {{ props.row["ID"] }}
+                  </q-td>
+                  <q-td key="description" :props="props">
+                    {{ props.row["Description"] }}
+                  </q-td>
+                  <q-td key="uploadDate" :props="props">
+                    {{ props.row["DateUpdated"] }}
+                  </q-td>
+                  <q-td key="select" :props="props">
+                    <q-chip
+                      clickable
+                      color="green"
+                      text-color="white"
+                      @click="
+                        handleDocumentSelection(
+                          selectedRA,
+                          props.row['ID'],
+                          'RADocNumber'
+                        )
+                      "
+                    >
+                      This One!
+                    </q-chip>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
           </div>
         </div>
         <div>
@@ -46,21 +135,33 @@
             <q-table
               class="my-sticky-dynamic"
               title="Check Outs For Hire"
-              :rows="audits.rentalData"
-              :columns="rentalColumns"
-              :loading="loading"
-              row-key="Unique ID"
+              :rows="audits.checkOuts"
+              :columns="documentColumns"
+              :loading="audits.documentsLoading"
+              row-key="index"
               virtual-scroll
               :virtual-scroll-item-size="48"
               :virtual-scroll-sticky-size-start="48"
-              :pagination="pagination"
               :rows-per-page-options="[0]"
-              @virtual-scroll="onScroll"
             >
-              <template v-slot:body="row">
-                <q-tr :props="row" @click="onRowClick(rowClicked())">
-                  <q-td key="agreementNumber">
-                    <p>{{ row["Unique ID"] }}</p>
+              <template v-slot:loading>
+                <q-inner-loading showing color="primary" />
+              </template>
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td key="ID" :props="props">
+                    {{ props.row["ID"] }}
+                  </q-td>
+                  <q-td key="description" :props="props">
+                    {{ props.row["Description"] }}
+                  </q-td>
+                  <q-td key="uploadDate" :props="props">
+                    {{ props.row["DateUpdated"] }}
+                  </q-td>
+                  <q-td key="select" :props="props">
+                    <q-chip clickable color="green" text-color="white">
+                      This One!
+                    </q-chip>
                   </q-td>
                 </q-tr>
               </template>
@@ -77,7 +178,7 @@ import { ref, onBeforeMount } from "vue";
 import { useRentalAuditStore } from "src/stores/RentalAuditStore";
 
 const audits = useRentalAuditStore();
-const loading = ref(false);
+const selectedRA = ref();
 
 onBeforeMount(() => {
   audits.getData();
@@ -88,57 +189,81 @@ const rentalColumns = [
     name: "agreementNumber",
     label: "Agrrement Number",
     align: "left",
-    field: (row) => row["Unique ID"],
   },
   {
     name: "registration",
     required: true,
     label: "Registration",
     align: "left",
-    field: (row) => row["Registration"],
-    sortable: true,
   },
   {
     name: "customer",
     label: "Customer",
     align: "left",
-    field: (row) => row["Customer Name"],
-    sortable: true,
   },
   {
     name: "hireStart",
     label: "Hire Start Date",
     align: "left",
-    field: (row) => row["Hire Start Date"],
   },
   {
     name: "hireType",
     label: "Hire Type",
     align: "left",
-    field: (row) => row["Hire Type Name"],
   },
   {
     name: "live",
     label: "Live Hire",
-    align: "left",
-    field: (row) => (row["Live"] ? "Yes" : null),
+    align: "center",
   },
   {
     name: "rentalAgreement",
     label: "Rental Agreement ?",
-    align: "left",
-    field: (row) => (row["RADocNumber"] ? "Yes" : null),
+    align: "center",
   },
   {
     name: "checkOut",
     label: "Check Out ?",
-    align: "left",
-    field: (row) => (row["CheckOutDocNumber"] ? "Yes" : null),
+    align: "center",
   },
 ];
 
-function rowClicked() {
-  console.log("Clicked");
+const documentColumns = [
+  {
+    name: "ID",
+    label: "Document ID",
+    align: "left",
+  },
+  {
+    name: "description",
+    label: "Description",
+    align: "left",
+  },
+  {
+    name: "uploadDate",
+    label: "Document Upload Date",
+    align: "left",
+  },
+  {
+    name: "select",
+    label: "Select Document",
+    align: "left",
+  },
+];
+
+function handleRowClick(agreementNumber, vehicleID) {
+  if (!audits.documentsLoading) {
+    selectedRA.value = agreementNumber;
+    audits.getDocumentsForRental(vehicleID);
+  }
+}
+
+async function handleDocumentSelection(
+  rentalAgreementNumber,
+  documentNumber,
+  documentType
+) {
+  await audits.addDocument(rentalAgreementNumber, documentNumber, documentType);
 }
 </script>
 
