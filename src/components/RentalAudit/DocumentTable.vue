@@ -61,6 +61,19 @@
           </q-td>
         </q-tr>
       </template>
+      <template v-slot:pagination>
+        <q-chip
+          clickable
+          @click="
+            handleDocumentSelection(
+              audits.selectedRA.AgreementNumber,
+              -1,
+              documentColumn
+            )
+          "
+          >No Applicable Document</q-chip
+        >
+      </template>
       <template v-slot:no-data="{ icon, message, filter }">
         <div class="full-width row flex-center q-gutter-sm">
           <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
@@ -106,7 +119,7 @@ const tableData = computed(() => {
   if (props.dataType == "rentalAgreements") {
     return audits.rentalAgreements;
   } else if (props.dataType == "checkOuts") {
-    return audits.checkouts;
+    return audits.checkOuts;
   } else {
     return null;
   }

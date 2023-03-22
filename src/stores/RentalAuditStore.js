@@ -79,12 +79,18 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
               (document) => document["Unique ID"] == rentalAgreementNumber
             );
             this.rentalData[documentIndex][documentType] = documentNumber;
+
+            if (documentType == "RADocNumber") {
+              this.selectedRA.AgreementNumber == documentNumber;
+            }
+            if (documentType == "CheckOutDocNumber") {
+              this.selectedRA.CheckOutDocNumber == documentNumber;
+            }
+
             this.documentUploading = false;
-            this.getDocumentsForVehicle();
           } else {
             alert("There was a problem processing this request");
             this.documentUploading = false;
-            this.getDocumentsForVehicle();
           }
         });
     },
