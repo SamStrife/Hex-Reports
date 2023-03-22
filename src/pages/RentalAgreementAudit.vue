@@ -30,7 +30,7 @@
       <div>
         <div class="q-pa-md">
           <q-table
-            class="my-sticky-dynamic"
+            class="rentalTable"
             title="Rentals"
             :rows="audits.rentalData"
             :columns="rentalColumns"
@@ -49,6 +49,13 @@
                     props.row['Vehicle Unique ID']
                   )
                 "
+                class="rentalRow"
+                :class="{
+                  selectedRow: props.row['Unique ID'] == selectedRA,
+                  bothPresent:
+                    props.row['RADocNumber'] > 0 &&
+                    props.row['CheckOutDocNumber'] > 0,
+                }"
               >
                 <q-td key="agreementNumber" :props="props">
                   {{ props.row["Unique ID"] }}
@@ -69,32 +76,44 @@
                 </q-td>
                 <q-td key="live" :props="props">
                   <q-chip
+                    v-if="props.row['Live']"
                     color="green"
                     text-color="white"
                     label="Yes"
-                    v-if="props.row['Live']"
                   />
                   <q-chip
+                    v-else
                     color="red"
                     text-color="white"
                     label="No"
-                    v-else
                   ></q-chip>
                 </q-td>
                 <q-td key="rentalAgreement" :props="props">
                   <q-chip
+                    v-if="props.row['RADocNumber'] > 0"
                     color="green"
                     text-color="white"
                     label="Yes"
-                    v-if="props.row['RADocNumber']"
+                  />
+                  <q-chip
+                    v-if="props.row['RADocNumber'] < 0"
+                    color="red"
+                    text-color="white"
+                    label="No"
                   />
                 </q-td>
                 <q-td key="checkOut" :props="props">
                   <q-chip
+                    v-if="props.row['CheckOutDocNumber'] > 0"
                     color="green"
                     text-color="white"
                     label="Yes"
-                    v-if="props.row['CheckOutDocNumber']"
+                  />
+                  <q-chip
+                    v-if="props.row['CheckOutDocNumber'] < 0"
+                    color="red"
+                    text-color="white"
+                    label="No"
                   />
                 </q-td>
               </q-tr>
@@ -106,7 +125,7 @@
         <div class="col-6">
           <div class="q-pa-md">
             <q-table
-              class="my-sticky-dynamic"
+              class="documentTable"
               title="Rental Agreements For Hire"
               :rows="audits.rentalAgreements"
               :columns="documentColumns"
@@ -152,13 +171,29 @@
                   </q-td>
                 </q-tr>
               </template>
+              <template v-slot:no-data="{ icon, message, filter }">
+                <div class="full-width row flex-center q-gutter-sm">
+                  <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+                  <span> {{ message }} </span>
+                  <q-chip
+                    color="red"
+                    text-color="white"
+                    clickable
+                    @click="
+                      handleDocumentSelection(selectedRA, -1, 'RADocNumber')
+                    "
+                  >
+                    Set No Document
+                  </q-chip>
+                </div>
+              </template>
             </q-table>
           </div>
         </div>
         <div class="col-6">
           <div class="q-pa-md">
             <q-table
-              class="my-sticky-dynamic"
+              class="documentTable"
               title="Check Outs For Hire"
               :rows="audits.checkOuts"
               :columns="documentColumns"
@@ -203,6 +238,26 @@
                     </q-chip>
                   </q-td>
                 </q-tr>
+              </template>
+              <template v-slot:no-data="{ icon, message, filter }">
+                <div class="full-width row flex-center q-gutter-sm">
+                  <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+                  <span> {{ message }} </span>
+                  <q-chip
+                    color="red"
+                    text-color="white"
+                    clickable
+                    @click="
+                      handleDocumentSelection(
+                        selectedRA,
+                        -1,
+                        'CheckOutDocNumber'
+                      )
+                    "
+                  >
+                    Set No Document
+                  </q-chip>
+                </div>
               </template>
             </q-table>
           </div>
@@ -357,9 +412,38 @@ async function handleDocumentSelection(
 </script>
 
 <style scoped lang="sass">
-.my-sticky-dynamic
+.bothPresent
+  background: #a2e8b5
+
+.selectedRow
+  background: #098512
+  color: #fff
+
+.rentalRow
+  cursor: pointer
+
+.rentalTable
   /* height or max-height is important */
-  height: 410px
+  height: 550px
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th /* bg color is important for th; just specify one */
+    background-color: #fff
+
+  thead tr th
+    position: sticky
+    z-index: 1
+  /* this will be the loading indicator */
+  thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
+  thead tr:first-child th
+    top: 0
+
+.documentTable
+  /* height or max-height is important */
+  height: 400px
 
   .q-table__top,
   .q-table__bottom,
