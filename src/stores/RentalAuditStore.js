@@ -6,6 +6,13 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
     rentalData: [],
     documentData: [],
     documentsLoading: false,
+    documentUploading: false,
+    selectedRA: {
+      AgreementNumber: null,
+      RADocNumber: null,
+      CheckOutDocNumber: null,
+      VehicleID: null,
+    },
   }),
 
   getters: {
@@ -42,12 +49,12 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
           }
         });
     },
-    async getDocumentsForRental(vehicleID) {
+    async getDocumentsForVehicle() {
       this.documentsLoading = true;
       this.documentData = [];
       await axios
         .get(
-          `https://api.hexreports.com/rentalAudit/getDocumentData/${vehicleID}`
+          `https://api.hexreports.com/rentalAudit/getDocumentData/${this.selectedRA.VehicleID}`
         )
         .then((response) => {
           for (let document of response.data.Documents) {
@@ -57,7 +64,7 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
       this.documentsLoading = false;
     },
     async addDocument(rentalAgreementNumber, documentNumber, documentType) {
-      console.log("Adding Document");
+      this.documentUploading = true;
 
       const postData = new FormData();
       postData.append("rentalAgreementNumber", rentalAgreementNumber);
@@ -72,10 +79,20 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
               (document) => document["Unique ID"] == rentalAgreementNumber
             );
             this.rentalData[documentIndex][documentType] = documentNumber;
+            this.documentUploading = false;
+            this.getDocumentsForVehicle();
           } else {
             alert("There was a problem processing this request");
+            this.documentUploading = false;
+            this.getDocumentsForVehicle();
           }
         });
+    },
+    setSelectedRA(row) {
+      this.selectedRA.AgreementNumber = row["Unique ID"];
+      this.selectedRA.RADocNumber = row["RADocNumber"];
+      this.selectedRA.CheckOutDocNumber = row["CheckOutDocNumber"];
+      this.selectedRA.VehicleID = row["Vehicle Unique ID"];
     },
   },
 });

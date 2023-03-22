@@ -43,18 +43,24 @@
             <template v-slot:body="props">
               <q-tr
                 :props="props"
-                @click="
-                  handleRowClick(
-                    props.row['Unique ID'],
-                    props.row['Vehicle Unique ID']
-                  )
-                "
+                @click="handleRowClick(props.row)"
                 class="rentalRow"
                 :class="{
-                  selectedRow: props.row['Unique ID'] == selectedRA,
+                  selectedRow:
+                    props.row['Unique ID'] == selectedRA.AgreementNumber,
                   bothPresent:
                     props.row['RADocNumber'] > 0 &&
                     props.row['CheckOutDocNumber'] > 0,
+                  onePresent:
+                    (props.row['RADocNumber'] > 0 &&
+                      (props.row['CheckOutDocNumber'] < 0 ||
+                        !props.row['CheckOutDocNumber'])) ||
+                    (props.row['CheckOutDocNumber'] > 0 &&
+                      (props.row['RADocNumber'] < 0 ||
+                        !props.row['RADocNumber'])),
+                  nonePresent:
+                    props.row['RADocNumber'] < 0 &&
+                    props.row['CheckOutDocNumber'] < 0,
                 }"
               >
                 <q-td key="agreementNumber" :props="props">
@@ -123,144 +129,10 @@
       </div>
       <div class="row">
         <div class="col-6">
-          <div class="q-pa-md">
-            <q-table
-              class="documentTable"
-              title="Rental Agreements For Hire"
-              :rows="audits.rentalAgreements"
-              :columns="documentColumns"
-              :loading="audits.documentsLoading"
-              row-key="index"
-              virtual-scroll
-              :virtual-scroll-item-size="48"
-              :virtual-scroll-sticky-size-start="48"
-              :rows-per-page-options="[0]"
-              no-data-label="No matching documents found"
-            >
-              <template v-slot:loading>
-                <q-inner-loading showing color="primary" />
-              </template>
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td key="ID" :props="props">
-                    {{ props.row["ID"] }}
-                  </q-td>
-                  <q-td key="description" :props="props">
-                    {{ props.row["Description"] }}
-                  </q-td>
-                  <q-td key="uploadDate" :props="props">
-                    {{
-                      date.formatDate(props.row["DateUpdated"], "DD/MM/YYYY")
-                    }}
-                  </q-td>
-                  <q-td key="select" :props="props">
-                    <q-chip
-                      clickable
-                      color="green"
-                      text-color="white"
-                      @click="
-                        handleDocumentSelection(
-                          selectedRA,
-                          props.row['ID'],
-                          'RADocNumber'
-                        )
-                      "
-                    >
-                      This One!
-                    </q-chip>
-                  </q-td>
-                </q-tr>
-              </template>
-              <template v-slot:no-data="{ icon, message, filter }">
-                <div class="full-width row flex-center q-gutter-sm">
-                  <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-                  <span> {{ message }} </span>
-                  <q-chip
-                    color="red"
-                    text-color="white"
-                    clickable
-                    @click="
-                      handleDocumentSelection(selectedRA, -1, 'RADocNumber')
-                    "
-                  >
-                    Set No Document
-                  </q-chip>
-                </div>
-              </template>
-            </q-table>
-          </div>
+          <DocumentTable dataType="rentalAgreements"></DocumentTable>
         </div>
         <div class="col-6">
-          <div class="q-pa-md">
-            <q-table
-              class="documentTable"
-              title="Check Outs For Hire"
-              :rows="audits.checkOuts"
-              :columns="documentColumns"
-              :loading="audits.documentsLoading"
-              row-key="index"
-              virtual-scroll
-              :virtual-scroll-item-size="48"
-              :virtual-scroll-sticky-size-start="48"
-              :rows-per-page-options="[0]"
-              no-data-label="No matching documents found"
-            >
-              <template v-slot:loading>
-                <q-inner-loading showing color="primary" />
-              </template>
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td key="ID" :props="props">
-                    {{ props.row["ID"] }}
-                  </q-td>
-                  <q-td key="description" :props="props">
-                    {{ props.row["Description"] }}
-                  </q-td>
-                  <q-td key="uploadDate" :props="props">
-                    {{
-                      date.formatDate(props.row["DateUpdated"], "DD/MM/YYYY")
-                    }}
-                  </q-td>
-                  <q-td key="select" :props="props">
-                    <q-chip
-                      clickable
-                      color="green"
-                      text-color="white"
-                      @click="
-                        handleDocumentSelection(
-                          selectedRA,
-                          props.row['ID'],
-                          'CheckOutDocNumber'
-                        )
-                      "
-                    >
-                      This One!
-                    </q-chip>
-                  </q-td>
-                </q-tr>
-              </template>
-              <template v-slot:no-data="{ icon, message, filter }">
-                <div class="full-width row flex-center q-gutter-sm">
-                  <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-                  <span> {{ message }} </span>
-                  <q-chip
-                    color="red"
-                    text-color="white"
-                    clickable
-                    @click="
-                      handleDocumentSelection(
-                        selectedRA,
-                        -1,
-                        'CheckOutDocNumber'
-                      )
-                    "
-                  >
-                    Set No Document
-                  </q-chip>
-                </div>
-              </template>
-            </q-table>
-          </div>
+          <DocumentTable dataType="checkOuts"></DocumentTable>
         </div>
       </div>
     </div>
@@ -268,13 +140,14 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, reactive, onBeforeMount } from "vue";
 import { useRentalAuditStore } from "src/stores/RentalAuditStore";
 import { date } from "quasar";
 import VueApexCharts from "vue3-apexcharts";
+import DocumentTable from "src/components/RentalAudit/DocumentTable.vue";
 
 const audits = useRentalAuditStore();
-const selectedRA = ref();
+const selectedRA = audits.selectedRA;
 
 onBeforeMount(() => {
   audits.getData();
@@ -372,49 +245,21 @@ const rentalColumns = [
   },
 ];
 
-const documentColumns = [
-  {
-    name: "ID",
-    label: "Document ID",
-    align: "left",
-  },
-  {
-    name: "description",
-    label: "Description",
-    align: "left",
-  },
-  {
-    name: "uploadDate",
-    label: "Document Upload Date",
-    align: "left",
-  },
-  {
-    name: "select",
-    label: "Select Document",
-    align: "left",
-  },
-];
-
-async function handleRowClick(agreementNumber, vehicleID) {
+async function handleRowClick(row) {
   if (!audits.documentsLoading) {
-    selectedRA.value = agreementNumber;
-    await audits.getDocumentsForRental(vehicleID);
+    audits.setSelectedRA(row);
+    await audits.getDocumentsForVehicle();
   }
-}
-
-async function handleDocumentSelection(
-  rentalAgreementNumber,
-  documentNumber,
-  documentType
-) {
-  await audits.addDocument(rentalAgreementNumber, documentNumber, documentType);
 }
 </script>
 
 <style scoped lang="sass">
 .bothPresent
   background: #a2e8b5
-
+.onePresent
+  background: #f5af53
+.nonePresent
+  background: #f58787
 .selectedRow
   background: #098512
   color: #fff
@@ -425,25 +270,6 @@ async function handleDocumentSelection(
 .rentalTable
   /* height or max-height is important */
   height: 550px
-
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th /* bg color is important for th; just specify one */
-    background-color: #fff
-
-  thead tr th
-    position: sticky
-    z-index: 1
-  /* this will be the loading indicator */
-  thead tr:last-child th
-    /* height of all previous header rows */
-    top: 48px
-  thead tr:first-child th
-    top: 0
-
-.documentTable
-  /* height or max-height is important */
-  height: 400px
 
   .q-table__top,
   .q-table__bottom,
