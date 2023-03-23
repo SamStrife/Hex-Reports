@@ -45,19 +45,8 @@
                   <q-toggle
                     v-model="rentalFilters.liveHireFilter"
                     val="liveHires"
-                    label="Live hires"
+                    label="Live Hires Only"
                   />
-                  <q-toggle
-                    v-model="rentalFilters.missingRAFilter"
-                    val="rentalAgreements"
-                    label="Missing Rental Agreements?"
-                  />
-                  <q-toggle
-                    v-model="rentalFilters.missingCheckOutFilter"
-                    val="checkOuts"
-                    label="Missing Check Out Sheets"
-                  />
-                  <q-toggle v-model="showAll" val="showAll" label="Show All" />
                 </div>
                 <div class="col-3">
                   <q-input
@@ -159,7 +148,6 @@
               </q-tr>
             </template>
           </q-table>
-          <div>{{ filter }}</div>
         </div>
       </div>
       <div class="row">
@@ -321,19 +309,9 @@ function rentalFilter(rows, terms) {
 
     //Gather toggle conditions
     let c1 = rentalFilters.liveHireFilter && row["Live"];
-    // let c2 =
-    //   (rentalFilters.missingRAFilter && row["RADocNumber"] < 0) ||
-    //   row["RADocNumber"] == null;
-    // let c3 =
-    //   rentalFilters.missingCheckOutFilter &&
-    //   (row["CheckOutDocNumber"] < 0 || row["CheckOutDocNumber"] == null);
-
-    // let c1 = rentalFilters.liveHireFilter;
-    // let c2 = rentalFilters.missingRAFilter;
-    // let c3 = rentalFilters.missingCheckOutFilter;
+    let c2 = !rentalFilters.liveHireFilter;
 
     //Gather search condition
-
     //Assume true in case there is no search
     let s1 = true;
 
@@ -356,12 +334,7 @@ function rentalFilter(rows, terms) {
     //assume row doesn't match
     ans = false;
 
-    //check if any of the conditions match
-    // if ((c1 && s1) || (c2 && s1) || (c3 && s1)) {
-    //   ans = true;
-    // }
-
-    if (c1 && s1) {
+    if ((c1 && s1) || (c2 && s1)) {
       ans = true;
     }
 
@@ -378,22 +351,6 @@ const filter = computed(() => {
     rentalAgreements: rentalFilters.missingRAFilter,
     checkOuts: rentalFilters.missingCheckOutFilter,
   };
-});
-
-const showAll = computed({
-  get: function () {
-    console.log(this.filterToggle);
-    return (
-      rentalFilters.liveHireFilter &&
-      rentalFilters.missingRAFilter &&
-      rentalFilters.missingCheckOutFilter
-    );
-  },
-  set: function (newValue) {
-    rentalFilters.liveHireFilter = newValue;
-    rentalFilters.missingRAFilter = newValue;
-    rentalFilters.missingCheckOutFilter = newValue;
-  },
 });
 </script>
 
