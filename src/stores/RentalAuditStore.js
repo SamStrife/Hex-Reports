@@ -13,6 +13,7 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
       CheckOutDocNumber: null,
       VehicleID: null,
     },
+    reportRanOnce: false,
   }),
 
   getters: {
@@ -50,6 +51,7 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
         });
     },
     async getDocumentsForVehicle() {
+      this.reportRanOnce = true;
       this.documentsLoading = true;
       this.documentData = [];
       await axios

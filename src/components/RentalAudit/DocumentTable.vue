@@ -74,10 +74,13 @@
           >No Applicable Document</q-chip
         >
       </template>
-      <template v-slot:no-data="{ icon, message, filter }">
+      <template
+        v-slot:no-data="{ icon, message, filter }"
+        v-if="audits.reportRanOnce"
+      >
         <div class="full-width row flex-center q-gutter-sm">
           <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-          <span> {{ message }} </span>
+          <span v-if="audits.reportRanOnce">{{ message }}</span>
           <q-chip
             color="red"
             text-color="white"
