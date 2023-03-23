@@ -5,22 +5,22 @@
         <div id="chart">
           <vue-apex-charts
             type="radialBar"
-            :options="chartOptions"
-            :series="series"
+            :options="totalRentalsCheckedChartOptions"
+            :series="totalRentalsCheckedChartSeries"
           ></vue-apex-charts>
         </div>
         <div id="chart">
           <vue-apex-charts
             type="radialBar"
-            :options="chartOptions"
-            :series="series"
+            :options="totalRentalAgreementsPresentChartOptions"
+            :series="totalRentalAgreementsPresentSeries"
           ></vue-apex-charts>
         </div>
         <div id="chart">
           <vue-apex-charts
             type="radialBar"
-            :options="chartOptions"
-            :series="series"
+            :options="totalCheckOutsPresentChartOptions"
+            :series="totalCheckOutsPresentSeries"
           ></vue-apex-charts>
         </div>
       </section>
@@ -33,7 +33,6 @@
             :columns="rentalColumns"
             row-key="Unique ID"
             virtual-scroll
-            :virtual-scroll-item-size="48"
             :virtual-scroll-sticky-size-start="48"
             :rows-per-page-options="[0]"
             :filter="filter"
@@ -182,8 +181,11 @@ const rentalFilters = reactive({
   missingCheckOutFilter: true,
 });
 
-const series = [76];
-const chartOptions = {
+const totalRentalsCheckedChartSeries = [
+  Math.round((audits.totalRentalsChecked / audits.totalRentals) * 100),
+];
+
+const totalRentalsCheckedChartOptions = {
   chart: {
     type: "radialBar",
     offsetY: -20,
@@ -211,23 +213,140 @@ const chartOptions = {
       dataLabels: {
         name: {
           show: true,
+          fontSize: "18px",
+          color: "#169109",
+          offsetY: 25,
         },
         value: {
-          offsetY: -35,
-          fontSize: "18px",
+          offsetY: -20,
+          fontSize: "25px",
         },
       },
     },
   },
+  fill: {
+    type: "solid",
+    colors: ["#169109"],
+  },
   grid: {
     padding: {
-      top: -10,
+      bottom: 12,
+    },
+  },
+  labels: ["Rentals Checked"],
+};
+
+const totalRentalAgreementsPresentSeries = [
+  Math.round(
+    (audits.totalRentalAgreementsPresent / audits.totalRentalsChecked) * 100
+  ),
+];
+
+const totalRentalAgreementsPresentChartOptions = {
+  chart: {
+    type: "radialBar",
+    offsetY: -20,
+    sparkline: {
+      enabled: true,
+    },
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -90,
+      endAngle: 90,
+      track: {
+        background: "#e7e7e7",
+        strokeWidth: "97%",
+        margin: 5, // margin is in pixels
+        dropShadow: {
+          enabled: true,
+          top: 2,
+          left: 0,
+          color: "#999",
+          opacity: 1,
+          blur: 2,
+        },
+      },
+      dataLabels: {
+        name: {
+          show: true,
+          fontSize: "18px",
+          color: "#169109",
+          offsetY: 25,
+        },
+        value: {
+          offsetY: -20,
+          fontSize: "25px",
+        },
+      },
     },
   },
   fill: {
     type: "solid",
+    colors: ["#169109"],
   },
-  labels: ["Average Results"],
+  grid: {
+    padding: {
+      bottom: 12,
+    },
+  },
+  labels: ["Rental Agreements Present"],
+};
+const totalCheckOutsPresentSeries = [
+  Math.round(
+    (audits.totalCheckOutSheetsPresent / audits.totalRentalsChecked) * 100
+  ),
+];
+
+const totalCheckOutsPresentChartOptions = {
+  chart: {
+    type: "radialBar",
+    offsetY: -20,
+    sparkline: {
+      enabled: true,
+    },
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -90,
+      endAngle: 90,
+      track: {
+        background: "#e7e7e7",
+        strokeWidth: "97%",
+        margin: 5, // margin is in pixels
+        dropShadow: {
+          enabled: true,
+          top: 2,
+          left: 0,
+          color: "#999",
+          opacity: 1,
+          blur: 2,
+        },
+      },
+      dataLabels: {
+        name: {
+          show: true,
+          fontSize: "18px",
+          color: "#169109",
+          offsetY: 25,
+        },
+        value: {
+          offsetY: -20,
+          fontSize: "25px",
+        },
+      },
+    },
+  },
+  fill: {
+    type: "solid",
+    colors: ["#169109"],
+  },
+  grid: {
+    padding: {
+      bottom: 12,
+    },
+  },
+  labels: ["Check Out Sheets Present"],
 };
 
 const rentalColumns = [
@@ -286,17 +405,6 @@ async function handleRowClick(row) {
     await audits.getDocumentsForVehicle();
   }
 }
-
-const getUniqueCustomers = computed(() => {
-  const uniqueCustomers = new Set();
-  if (audits.rentalData.length > 0) {
-    for (const rental of audits.rentalData) {
-      uniqueCustomers.add(rental["Customer Name"]);
-    }
-  }
-
-  return Array.from(uniqueCustomers).sort();
-});
 
 function rentalFilter(rows, terms) {
   // rows contain the entire data

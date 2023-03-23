@@ -35,8 +35,38 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
         (document) => document["TypeID"] == 26 || document["TypeID"] == 103
       );
     },
-    totalRentalsChecked() {},
-    totalDocumentsPresent(documentType) {},
+    totalRentalsChecked() {
+      let count = 0;
+      for (const rental of this.rentalData) {
+        if (
+          rental["RADocNumber"] != null &&
+          rental["CheckOutDocNumber"] != null
+        ) {
+          count += 1;
+        }
+      }
+      return count;
+    },
+
+    totalRentalAgreementsPresent() {
+      let count = 0;
+      for (const rental of this.rentalData) {
+        if (rental["RADocNumber"] > 0) {
+          count += 1;
+        }
+      }
+      return count;
+    },
+
+    totalCheckOutSheetsPresent() {
+      let count = 0;
+      for (const rental of this.rentalData) {
+        if (rental["CheckOutDocNumber"] > 0) {
+          count += 1;
+        }
+      }
+      return count;
+    },
   },
 
   actions: {
