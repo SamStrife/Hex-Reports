@@ -27,12 +27,16 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
           document["TypeID"] == 31 ||
           document["TypeID"] == 43 ||
           document["TypeID"] == 83 ||
-          document["TypeID"] == 108
+          document["TypeID"] == 108 ||
+          document["TypeID"] == 130
       );
     },
     checkOuts() {
       return this.documentData.filter(
-        (document) => document["TypeID"] == 26 || document["TypeID"] == 103
+        (document) =>
+          document["TypeID"] == 26 ||
+          document["TypeID"] == 103 ||
+          document["TypeID"] == 130
       );
     },
     totalRentalsChecked() {
