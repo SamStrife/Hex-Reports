@@ -52,7 +52,7 @@ const menuList = [
     icon: "assignment",
     routerLink: "/rentalagreementaudit",
     title: "Rental Agreement Audit",
-    requiresLogin: false,
+    requiresLogin: true,
     vueFile: "RentalAgreementAudit.vue",
   },
   // {

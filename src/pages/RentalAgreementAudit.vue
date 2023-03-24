@@ -6,21 +6,37 @@
           <vue-apex-charts
             type="radialBar"
             :options="totalRentalsCheckedChartOptions"
-            :series="totalRentalsCheckedChartSeries"
+            :series="[
+              Math.round(
+                (audits.totalRentalsChecked / audits.totalRentals) * 100
+              ),
+            ]"
           ></vue-apex-charts>
         </div>
         <div id="chart">
           <vue-apex-charts
             type="radialBar"
             :options="totalRentalAgreementsPresentChartOptions"
-            :series="totalRentalAgreementsPresentSeries"
+            :series="[
+              Math.round(
+                (audits.totalRentalAgreementsPresent /
+                  audits.totalRentalsChecked) *
+                  100
+              ),
+            ]"
           ></vue-apex-charts>
         </div>
         <div id="chart">
           <vue-apex-charts
             type="radialBar"
             :options="totalCheckOutsPresentChartOptions"
-            :series="totalCheckOutsPresentSeries"
+            :series="[
+              Math.round(
+                (audits.totalCheckOutSheetsPresent /
+                  audits.totalRentalsChecked) *
+                  100
+              ),
+            ]"
           ></vue-apex-charts>
         </div>
       </section>
@@ -162,7 +178,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onBeforeMount } from "vue";
+import { reactive, computed, onBeforeMount } from "vue";
 import { useRentalAuditStore } from "src/stores/RentalAuditStore";
 import { date } from "quasar";
 import VueApexCharts from "vue3-apexcharts";
@@ -174,6 +190,15 @@ onBeforeMount(() => {
   audits.getData();
 });
 
+const filter = computed(() => {
+  return {
+    search: rentalFilters.search,
+    liveHires: rentalFilters.liveHireFilter,
+    rentalAgreements: rentalFilters.missingRAFilter,
+    checkOuts: rentalFilters.missingCheckOutFilter,
+  };
+});
+
 const rentalFilters = reactive({
   search: "",
   liveHireFilter: true,
@@ -181,8 +206,48 @@ const rentalFilters = reactive({
   missingCheckOutFilter: true,
 });
 
-const totalRentalsCheckedChartSeries = [
-  Math.round((audits.totalRentalsChecked / audits.totalRentals) * 100),
+const rentalColumns = [
+  {
+    name: "agreementNumber",
+    label: "Agrrement Number",
+    align: "left",
+  },
+  {
+    name: "registration",
+    required: true,
+    label: "Registration",
+    align: "left",
+  },
+  {
+    name: "customer",
+    label: "Customer",
+    align: "left",
+  },
+  {
+    name: "hireStart",
+    label: "Hire Start Date",
+    align: "left",
+  },
+  {
+    name: "hireType",
+    label: "Hire Type",
+    align: "left",
+  },
+  {
+    name: "live",
+    label: "Live Hire",
+    align: "center",
+  },
+  {
+    name: "rentalAgreement",
+    label: "Rental Agreement ?",
+    align: "center",
+  },
+  {
+    name: "checkOut",
+    label: "Check Out ?",
+    align: "center",
+  },
 ];
 
 const totalRentalsCheckedChartOptions = {
@@ -236,12 +301,6 @@ const totalRentalsCheckedChartOptions = {
   labels: ["Rentals Checked"],
 };
 
-const totalRentalAgreementsPresentSeries = [
-  Math.round(
-    (audits.totalRentalAgreementsPresent / audits.totalRentalsChecked) * 100
-  ),
-];
-
 const totalRentalAgreementsPresentChartOptions = {
   chart: {
     type: "radialBar",
@@ -292,11 +351,6 @@ const totalRentalAgreementsPresentChartOptions = {
   },
   labels: ["Rental Agreements Present"],
 };
-const totalCheckOutsPresentSeries = [
-  Math.round(
-    (audits.totalCheckOutSheetsPresent / audits.totalRentalsChecked) * 100
-  ),
-];
 
 const totalCheckOutsPresentChartOptions = {
   chart: {
@@ -348,56 +402,6 @@ const totalCheckOutsPresentChartOptions = {
   },
   labels: ["Check Out Sheets Present"],
 };
-
-const rentalColumns = [
-  {
-    name: "agreementNumber",
-    label: "Agrrement Number",
-    align: "left",
-    sortable: true,
-  },
-  {
-    name: "registration",
-    required: true,
-    label: "Registration",
-    align: "left",
-    sortable: true,
-  },
-  {
-    name: "customer",
-    label: "Customer",
-    align: "left",
-    sortable: true,
-    sort: (a, b) => a - b,
-  },
-  {
-    name: "hireStart",
-    label: "Hire Start Date",
-    align: "left",
-    sortable: true,
-    sort: (a, b) => a - b,
-  },
-  {
-    name: "hireType",
-    label: "Hire Type",
-    align: "left",
-  },
-  {
-    name: "live",
-    label: "Live Hire",
-    align: "center",
-  },
-  {
-    name: "rentalAgreement",
-    label: "Rental Agreement ?",
-    align: "center",
-  },
-  {
-    name: "checkOut",
-    label: "Check Out ?",
-    align: "center",
-  },
-];
 
 async function handleRowClick(row) {
   if (!audits.documentsLoading) {
@@ -451,15 +455,6 @@ function rentalFilter(rows, terms) {
 
   return filteredRows;
 }
-
-const filter = computed(() => {
-  return {
-    search: rentalFilters.search,
-    liveHires: rentalFilters.liveHireFilter,
-    rentalAgreements: rentalFilters.missingRAFilter,
-    checkOuts: rentalFilters.missingCheckOutFilter,
-  };
-});
 </script>
 
 <style scoped lang="sass">

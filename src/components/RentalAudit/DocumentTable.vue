@@ -17,7 +17,14 @@
         <q-inner-loading showing color="primary" />
       </template>
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr
+          :props="props"
+          :class="{
+            selectedDocRow:
+              audits.selectedRA.RADocNumber == props.row['ID'] ||
+              audits.selectedRA.CheckOutDocNumber == props.row['ID'],
+          }"
+        >
           <q-td key="ID" :props="props">
             {{ props.row["ID"] }}
           </q-td>
@@ -29,7 +36,6 @@
           </q-td>
           <q-td key="select" :props="props">
             <q-chip
-              v-if="props.row['ID'] != audits.selectedRA.RADocNumber"
               clickable
               color="green"
               text-color="white"
@@ -42,21 +48,6 @@
               "
             >
               This One!
-            </q-chip>
-            <q-chip
-              v-if="props.row['ID'] == audits.selectedRA.RADocNumber"
-              clickable
-              color="red"
-              text-color="white"
-              @click="
-                handleDocumentSelection(
-                  audits.selectedRA.AgreementNumber,
-                  -1,
-                  documentColumn
-                )
-              "
-            >
-              Not This One!
             </q-chip>
           </q-td>
         </q-tr>
@@ -102,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { date } from "quasar";
 import { useRentalAuditStore } from "src/stores/RentalAuditStore";
 
@@ -173,6 +164,10 @@ async function handleDocumentSelection(
 </script>
 
 <style scoped lang="sass">
+
+.selectedDocRow
+  background: #098512
+  color: #fff
 .documentTable
   /* height or max-height is important */
   height: 400px

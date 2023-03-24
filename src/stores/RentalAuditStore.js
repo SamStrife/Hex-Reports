@@ -113,7 +113,7 @@ export const useRentalAuditStore = defineStore("RentalAudit", {
             this.rentalData[documentIndex][documentType] = documentNumber;
 
             if (documentType == "RADocNumber") {
-              this.selectedRA.AgreementNumber == documentNumber;
+              this.selectedRA.RADocNumber == documentNumber;
             }
             if (documentType == "CheckOutDocNumber") {
               this.selectedRA.CheckOutDocNumber == documentNumber;
