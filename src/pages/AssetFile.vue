@@ -47,7 +47,12 @@
           </q-list>
         </div>
       </q-btn-dropdown>
-      <q-btn :disable="queryRunning" @click="go(selectedSalesPerson)">Go</q-btn>
+      <q-btn :disable="queryRunning" @click="runQuery(selectedSalesPerson)"
+        >Go</q-btn
+      >
+      <q-btn :disable="queryRunning" @click="runQuery('all')"
+        >Download For All</q-btn
+      >
     </div>
     <q-spinner
       v-if="queryRunning"
@@ -89,7 +94,7 @@ function selectSalesPerson(salesperson) {
   selectedSalesPerson.value = salesperson;
 }
 
-async function go(salesperson) {
+async function runQuery(salesperson) {
   if (salesperson == "Select A Sales Person")
     return alert("Please select a Sales Person.");
   queryRunning.value = true;
