@@ -36,7 +36,7 @@ const menuList = [
     icon: "checklist",
     routerLink: "/bulkmots",
     title: "Bulk MOT Checker",
-    requiresLogin: false,
+    requiresLogin: true,
     vueFile: "BulkMotChecker.vue",
   },
   {
