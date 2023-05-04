@@ -37,7 +37,7 @@
         </p>
       </div>
       <div class="q-pa-md column">
-        <q-form class="row justify-start" @submit.prevent="getData">
+        <q-form class="row justify-start" @submit.prevent="getDataForMonth">
           <div class="q-pa-md monthSelector">
             <q-select
               v-model="monthSelectionModel"
@@ -63,64 +63,51 @@
             <q-btn class="bg-primary text-white" type="submit">Go!</q-btn>
           </div>
         </q-form>
-        <div class="q-pa-md" v-if="monthlyMOTLoading">
-          <q-markup-table>
-            <thead>
-              <tr>
-                <th class="text-left" style="width: 150px">
-                  <q-skeleton animation="blink" type="text" />
-                </th>
-                <th class="text-right">
-                  <q-skeleton animation="blink" type="text" />
-                </th>
-                <th class="text-right">
-                  <q-skeleton animation="blink" type="text" />
-                </th>
-                <th class="text-right">
-                  <q-skeleton animation="blink" type="text" />
-                </th>
-                <th class="text-right">
-                  <q-skeleton animation="blink" type="text" />
-                </th>
-                <th class="text-right">
-                  <q-skeleton animation="blink" type="text" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="n in 5" :key="n">
-                <td class="text-left">
-                  <q-skeleton animation="blink" type="text" width="85px" />
-                </td>
-                <td class="text-right">
-                  <q-skeleton animation="blink" type="text" width="50px" />
-                </td>
-                <td class="text-right">
-                  <q-skeleton animation="blink" type="text" width="35px" />
-                </td>
-                <td class="text-right">
-                  <q-skeleton animation="blink" type="text" width="65px" />
-                </td>
-                <td class="text-right">
-                  <q-skeleton animation="blink" type="text" width="25px" />
-                </td>
-                <td class="text-right">
-                  <q-skeleton animation="blink" type="text" width="85px" />
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </div>
-        <div class="q-pa-md" v-if="monthlyReportRanOnce && !monthlyMOTLoading">
+        <div class="q-pa-md" v-if="monthlyReportRanOnce">
+          <div class="row q-pa-md" v-if="!monthlyMOTLoading">
+            <q-card class="column q-px-md">
+              <div class="col self-start text-h6">Total MOTs</div>
+              <div class="col self-center text-h3">
+                {{ totalMOTsForMonthNumber }}
+              </div>
+            </q-card>
+            <q-card class="column q-px-md">
+              <div class="col self-start text-h6">Total PRS</div>
+              <div class="col self-center text-h3">
+                {{ totalPRSForMonthNumber }}
+              </div>
+            </q-card>
+            <q-card class="column justify-evenly q-px-md">
+              <div class="col self-start text-h6">Total Fails</div>
+              <div class="col self-center text-h3">
+                {{ totalFailsForMonthNumber }}
+              </div>
+            </q-card>
+            <q-card class="column q-px-md">
+              <div class="col self-start text-h6">First Time Pass %</div>
+              <vue-apex-charts
+                class="col self-center"
+                type="radialBar"
+                :options="firstTimePassRateChartOptions"
+                :series="[firstTimePassRateForMonthPercent]"
+              ></vue-apex-charts>
+            </q-card>
+          </div>
           <q-chip
+            class="q-pa-md"
+            v-if="!monthlyMOTLoading"
             clickable
-            @click="downloadTable"
+            @click="downloadTableForMonth"
             icon="file_download"
             color="green-10"
             text-color="white"
             >Download</q-chip
           >
-          <q-markup-table id="motTable">
+          <q-markup-table
+            class="q-pa-md"
+            v-if="!monthlyMOTLoading"
+            id="motTable"
+          >
             <thead>
               <tr>
                 <th class="text-left">Job Number</th>
@@ -144,30 +131,14 @@
                 <td>{{ mot.Number }}</td>
                 <td>{{ mot.Registration }}</td>
                 <td>{{ mot.Required }}</td>
-                <td>
-                  {{ mot.Status }}
-                </td>
-                <td>
-                  {{ mot.Customer }}
-                </td>
-                <td>
-                  {{ mot.Supplier }}
-                </td>
-                <td>
-                  {{ mot["Vehicle Type"] }}
-                </td>
-                <td>
-                  {{ mot["All Job Types"] }}
-                </td>
-                <td>
-                  {{ mot["Number Of MOTS"] }}
-                </td>
-                <td>
-                  {{ mot["Number Of PRS"] }}
-                </td>
-                <td>
-                  {{ mot["Number Of Fails"] }}
-                </td>
+                <td>{{ mot.Status }}</td>
+                <td>{{ mot.Customer }}</td>
+                <td>{{ mot.Supplier }}</td>
+                <td>{{ mot["Vehicle Type"] }}</td>
+                <td>{{ mot["All Job Types"] }}</td>
+                <td>{{ mot["Number Of MOTS"] }}</td>
+                <td>{{ mot["Number Of PRS"] }}</td>
+                <td>{{ mot["Number Of Fails"] }}</td>
                 <td>
                   <p v-if="mot['Number Of MOTS'] == 0"></p>
                   <q-chip
@@ -183,6 +154,13 @@
               </tr>
             </tbody>
           </q-markup-table>
+
+          <q-inner-loading
+            :showing="monthlyMOTLoading"
+            label="Please Wait...Estimated wait time is 4 minutes."
+            label-class="text-primary"
+            label-style="font-size: 1.1em"
+          />
         </div>
       </div>
     </q-tab-panel>
@@ -194,20 +172,33 @@ import axios from "axios";
 import { ref, computed } from "vue";
 import BulkMotCheckerCard from "../components/BulkMOTChecker/BulkMotCheckerCard.vue";
 import * as XLSX from "xlsx";
+import VueApexCharts from "vue3-apexcharts";
 
+// INFO: Tab Selection
 const tab = ref("By Month");
 
+// INFO: By Registration Tab
+const registrations = ref("");
+const registrationArray = ref([]);
+const lookupArray = computed(() => new Set(registrationArray?.value));
+
+function addToMOTArray() {
+  const array = registrations.value.split(/\r?\n/);
+
+  for (const registration of array) {
+    registrationArray.value.push(registration.toUpperCase());
+  }
+}
+
+function clearMOTArray() {
+  registrationArray.value = [];
+}
+
+// INFO: By Month Tab
+const motArray = ref([]);
+const yearRegex = new RegExp("^\\d{4}$");
 const monthSelectionModel = ref("");
 const yearSelection = ref();
-
-const dateForApi = computed(() => {
-  const day = 1;
-  const month = monthSelctionOptions.indexOf(monthSelectionModel.value) + 1;
-  const year = yearSelection.value;
-
-  return `${day}-${month}-${year}`;
-});
-
 const monthSelctionOptions = [
   "January",
   "February",
@@ -222,35 +213,118 @@ const monthSelctionOptions = [
   "November",
   "December",
 ];
+const monthlyMOTLoading = ref(false);
+const estimatedLoadTimeForMonthData = ref(0);
+const timeElapsedLoadingForMonthData = ref(0);
+const estimatedLoadForMonthDataString = ref(
+  `Estimated Wait Time: ${estimatedLoadTimeForMonthData.value} Seconds`
+);
+const monthlyReportRanOnce = ref(false);
 
-const motArray = ref([]);
+const dateForApi = computed(() => {
+  const day = 1;
+  const month = monthSelctionOptions.indexOf(monthSelectionModel.value) + 1;
+  const year = yearSelection.value;
 
-const registrations = ref("");
-const registrationArray = ref([]);
-const lookupArray = computed(() => new Set(registrationArray?.value));
-const yearRegex = new RegExp("^\\d{4}$");
+  return `${day}-${month}-${year}`;
+});
 
-function addToMOTArray() {
-  const array = registrations.value.split(/\r?\n/);
+const totalMOTsForMonthNumber = computed(() => {
+  const length = motArray.value.reduce(
+    (acc, curr) => acc + curr["Number Of MOTS"],
+    0
+  );
 
-  for (const registration of array) {
-    registrationArray.value.push(registration.toUpperCase());
-  }
-}
+  return length;
+});
 
-function clearMOTArray() {
-  registrationArray.value = [];
-}
+const totalPRSForMonthNumber = computed(() => {
+  const length = motArray.value.reduce(
+    (acc, curr) => acc + curr["Number Of PRS"],
+    0
+  );
+
+  return length;
+});
+
+const totalFailsForMonthNumber = computed(() => {
+  const length = motArray.value.reduce(
+    (acc, curr) => acc + curr["Number Of Fails"],
+    0
+  );
+
+  return length;
+});
+
+const firstTimePassRateForMonthPercent = computed(() => {
+  const vehiclesWhichWereMOTd = motArray.value.filter(
+    (mot) => mot["Number Of MOTS"] > 0
+  ).length;
+  const numberOfFirstTimePasses = motArray.value.filter(
+    (mot) => mot["First Time Pass"] == true
+  ).length;
+
+  return Math.round((numberOfFirstTimePasses / vehiclesWhichWereMOTd) * 100);
+});
+
+const firstTimePassRateChartOptions = {
+  chart: {
+    type: "radialBar",
+    offsetY: -20,
+    sparkline: {
+      enabled: true,
+    },
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -90,
+      endAngle: 90,
+      track: {
+        background: "#e7e7e7",
+        strokeWidth: "97%",
+        margin: 5, // margin is in pixels
+        dropShadow: {
+          enabled: true,
+          top: 2,
+          left: 0,
+          color: "#999",
+          opacity: 1,
+          blur: 2,
+        },
+      },
+      dataLabels: {
+        name: {
+          show: false,
+          fontSize: "18px",
+          color: "#169109",
+          offsetY: 25,
+        },
+        value: {
+          offsetY: 0,
+          fontSize: "25px",
+        },
+      },
+    },
+  },
+  fill: {
+    type: "solid",
+    colors: ["#169109"],
+  },
+  grid: {
+    padding: {
+      bottom: 12,
+    },
+  },
+  label: ["First Time Pass %"],
+};
 
 function clearMonthData() {
   motArray.value = [];
 }
 
-const monthlyMOTLoading = ref(false);
-const monthlyReportRanOnce = ref(false);
-
-async function getData() {
+async function getDataForMonth() {
   clearMonthData();
+  timeElapsedLoadingForMonthData.value = 0;
   monthlyMOTLoading.value = true;
   monthlyReportRanOnce.value = true;
 
@@ -258,20 +332,32 @@ async function getData() {
   postData.append("Date", dateForApi.value);
 
   await axios
-    .post(`https://api.hexreports.com/bulkMOTCheck/byMonth`, postData)
+    .post(`https://api.hexreports.com/bulkMOTCheck/byMonth/length`, postData)
     .then((response) => {
       if (response.status == 200) {
-        for (const mot of response.data["MOTs"]) {
-          motArray.value.push(mot);
-        }
-        monthlyMOTLoading.value = false;
+        estimatedLoadTimeForMonthData.value = response.data;
+
+        axios
+          .post(`https://api.hexreports.com/bulkMOTCheck/byMonth`, postData)
+          .then((response) => {
+            if (response.status == 200) {
+              for (const mot of response.data["MOTs"]) {
+                motArray.value.push(mot);
+              }
+              monthlyMOTLoading.value = false;
+            } else {
+              alert("There was a problem processing this request");
+              monthlyMOTLoading.value = false;
+            }
+          });
       } else {
         alert("There was a problem processing this request");
         monthlyMOTLoading.value = false;
       }
     });
 }
-function downloadTable() {
+
+function downloadTableForMonth() {
   const workbook = XLSX.utils.book_new();
   let ws = XLSX.utils.json_to_sheet(motArray.value, {
     header: [
