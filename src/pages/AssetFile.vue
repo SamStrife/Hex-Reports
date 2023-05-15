@@ -6,7 +6,7 @@
         text-color="white"
         label="Download My Asset File"
         :disable="queryRunning"
-        @click="go(userStore.userName)"
+        @click="runQuery(userStore.userName)"
       />
     </div>
     <div
