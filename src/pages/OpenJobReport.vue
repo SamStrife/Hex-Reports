@@ -130,7 +130,7 @@ async function getJobChurn() {
     },
     headers: { "Content-Type": "multipart/form-data" },
   }).then((response) => {
-    response.data.JobChurn.forEach((e) => {
+    response.data.JobChurn.by_date.forEach((e) => {
       const date = Date.parse(Object.keys(e)[0]);
       const openJobs = Object.values(e)[0]["Open Jobs"];
       const completedJobs = Object.values(e)[0]["Complete Jobs"];
